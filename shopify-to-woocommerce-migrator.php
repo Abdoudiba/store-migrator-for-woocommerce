@@ -1,0 +1,78 @@
+<?php
+/**
+ * Plugin Name:       Shopify to WooCommerce Migrator
+ * Plugin URI:        https://github.com/Abdoudiba/shopify-to-woocommerce-migrator
+ * Description:        Migrate a Shopify store into WooCommerce — products, variants and images (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable.
+ * Version:           0.1.0-dev
+ * Requires at least: 6.0
+ * Requires PHP:      7.4
+ * Requires Plugins:  woocommerce
+ * WC requires at least: 8.0
+ * Author:            Abid
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       shopify-to-woocommerce-migrator
+ *
+ * @package Shopify_To_WooCommerce_Migrator
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+define( 'STWM_VERSION', '0.1.0-dev' );
+define( 'STWM_PLUGIN_FILE', __FILE__ );
+define( 'STWM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'STWM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'STWM_DB_VERSION', '1' );
+
+// Primitives (no WooCommerce classes touched at load time): safe to require
+// unconditionally so the activation hook can reach STWM_Install.
+require_once STWM_PLUGIN_DIR . 'includes/class-stwm-logger.php';
+require_once STWM_PLUGIN_DIR . 'includes/class-stwm-install.php';
+require_once STWM_PLUGIN_DIR . 'includes/class-stwm-migration-map.php';
+require_once STWM_PLUGIN_DIR . 'includes/class-stwm-run.php';
+require_once STWM_PLUGIN_DIR . 'includes/class-stwm-queue.php';
+
+register_activation_hook( __FILE__, array( 'STWM_Install', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'STWM_Install', 'deactivate' ) );
+
+/**
+ * Show an admin notice instead of fatal-erroring when WooCommerce is absent.
+ */
+function stwm_woocommerce_missing_notice() {
+	echo '<div class="notice notice-error"><p>' .
+		esc_html__( 'Shopify to WooCommerce Migrator requires WooCommerce to be installed and active.', 'shopify-to-woocommerce-migrator' ) .
+		'</p></div>';
+}
+
+/**
+ * Boot the plugin once all plugins are loaded.
+ */
+function stwm_init() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		add_action( 'admin_notices', 'stwm_woocommerce_missing_notice' );
+		return;
+	}
+
+	STWM_Install::init();
+	STWM_Queue::init();
+
+	if ( is_admin() ) {
+		require_once STWM_PLUGIN_DIR . 'includes/class-stwm-admin.php';
+		STWM_Admin::init();
+	}
+}
+add_action( 'plugins_loaded', 'stwm_init' );
+
+/**
+ * Declare HPOS compatibility. This plugin creates orders through the
+ * WooCommerce CRUD API (WC_Order), never direct post writes, so it is
+ * compatible with custom order tables.
+ */
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
+	}
+);
