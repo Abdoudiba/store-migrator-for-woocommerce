@@ -17,6 +17,57 @@ class STWM_Admin {
 	const CAP  = 'manage_woocommerce';
 
 	/**
+	 * Run id the upload_dir filter should target while wp_handle_upload() runs.
+	 *
+	 * @var string
+	 */
+	private static $upload_target = '';
+
+	/**
+	 * Point wp_handle_upload() at uploads/stwm/<run_id>/ for the duration of one
+	 * upload. Added and removed around the wp_handle_upload() call in do_connect().
+	 *
+	 * @param array $dirs The wp_upload_dir() array.
+	 * @return array
+	 */
+	public static function filter_upload_dir( $dirs ) {
+		if ( '' === self::$upload_target ) {
+			return $dirs;
+		}
+		$sub            = '/stwm/' . self::$upload_target;
+		$dirs['subdir'] = $sub;
+		$dirs['path']   = $dirs['basedir'] . $sub;
+		$dirs['url']    = $dirs['baseurl'] . $sub;
+		return $dirs;
+	}
+
+	/**
+	 * Let a .csv / .txt upload through even when the server's fileinfo reports a
+	 * generic MIME (CSV is very often seen as text/plain), which would otherwise
+	 * make wp_handle_upload() reject it. Only relaxes these two extensions, and
+	 * only while the do_connect() upload is in flight.
+	 *
+	 * @param array  $data     ext / type / proper_filename result.
+	 * @param string $file     Full path to the file.
+	 * @param string $filename The name of the file.
+	 * @return array
+	 */
+	public static function allow_csv_filetype( $data, $file, $filename ) {
+		if ( ! empty( $data['ext'] ) && ! empty( $data['type'] ) ) {
+			return $data;
+		}
+		$ext = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
+		if ( 'csv' === $ext ) {
+			$data['ext']  = 'csv';
+			$data['type'] = 'text/csv';
+		} elseif ( 'txt' === $ext ) {
+			$data['ext']  = 'txt';
+			$data['type'] = 'text/plain';
+		}
+		return $data;
+	}
+
+	/**
 	 * Ordered wizard steps: slug => label.
 	 */
 	private static function steps() {
@@ -531,7 +582,7 @@ class STWM_Admin {
 		}
 		check_admin_referer( 'stwm_log_csv' );
 
-		$run_id = isset( $_GET['run'] ) ? preg_replace( '/[^a-f0-9]/', '', (string) wp_unslash( $_GET['run'] ) ) : '';
+		$run_id = isset( $_GET['run'] ) ? preg_replace( '/[^a-f0-9]/', '', sanitize_text_field( wp_unslash( $_GET['run'] ) ) ) : '';
 		if ( '' === $run_id ) {
 			wp_die( esc_html__( 'No run specified.', 'shopify-to-woocommerce-migrator' ) );
 		}
@@ -642,27 +693,10 @@ class STWM_Admin {
 			return false;
 		}
 
-		$tmp = $_FILES['stwm_csv']['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- path validated via is_uploaded_file below.
-		if ( ! is_uploaded_file( $tmp ) ) {
-			self::set_notice( __( 'Upload validation failed.', 'shopify-to-woocommerce-migrator' ), 'error' );
-			return false;
-		}
-
-		$name = isset( $_FILES['stwm_csv']['name'] ) ? sanitize_file_name( wp_unslash( $_FILES['stwm_csv']['name'] ) ) : 'products.csv';
-		$ext  = strtolower( pathinfo( $name, PATHINFO_EXTENSION ) );
+		$orig_name = isset( $_FILES['stwm_csv']['name'] ) ? sanitize_file_name( wp_unslash( $_FILES['stwm_csv']['name'] ) ) : 'products.csv';
+		$ext       = strtolower( pathinfo( $orig_name, PATHINFO_EXTENSION ) );
 		if ( ! in_array( $ext, array( 'csv', 'txt' ), true ) ) {
 			self::set_notice( __( 'That does not look like a .csv file.', 'shopify-to-woocommerce-migrator' ), 'error' );
-			return false;
-		}
-
-		// Sniff the header row before committing.
-		$handle = fopen( $tmp, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-		$line   = $handle ? (string) fgets( $handle ) : '';
-		if ( $handle ) {
-			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-		}
-		if ( false === stripos( $line, 'Handle' ) || false === stripos( $line, 'Title' ) ) {
-			self::set_notice( __( 'This CSV has no "Handle" / "Title" columns, so it is not a Shopify product export.', 'shopify-to-woocommerce-migrator' ), 'error' );
 			return false;
 		}
 
@@ -671,7 +705,7 @@ class STWM_Admin {
 				'source'   => 'csv',
 				'status'   => 'uploaded',
 				'entities' => array( 'product' ),
-				'file'     => $name,
+				'file'     => $orig_name,
 				'options'  => array(
 					'download_images' => true,
 					'force_draft'     => false,
@@ -680,11 +714,60 @@ class STWM_Admin {
 			)
 		);
 
-		$dir  = stwm_run_upload_dir( $run_id );
-		$dest = $dir['path'] . '/products.csv';
-		if ( ! move_uploaded_file( $tmp, $dest ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_move_uploaded_file
+		// Move the upload into uploads/stwm/<run_id>/products.csv via WordPress's
+		// own handler (no direct move_uploaded_file()). A short-lived upload_dir
+		// filter targets the per-run directory; the filename is forced.
+		$dir                 = stwm_run_upload_dir( $run_id );
+		self::$upload_target = $run_id;
+		add_filter( 'upload_dir', array( __CLASS__, 'filter_upload_dir' ) );
+		add_filter( 'wp_check_filetype_and_ext', array( __CLASS__, 'allow_csv_filetype' ), 10, 3 );
+
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		$uploaded = wp_handle_upload(
+			$_FILES['stwm_csv'], // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_handle_upload() performs the validation and move.
+			array(
+				'test_form'                => false,
+				'unique_filename_callback' => static function () {
+					return 'products.csv';
+				},
+				'mimes'                    => array(
+					'csv' => 'text/csv',
+					'txt' => 'text/plain',
+				),
+			)
+		);
+
+		remove_filter( 'wp_check_filetype_and_ext', array( __CLASS__, 'allow_csv_filetype' ), 10 );
+		remove_filter( 'upload_dir', array( __CLASS__, 'filter_upload_dir' ) );
+		self::$upload_target = '';
+
+		if ( ! is_array( $uploaded ) || isset( $uploaded['error'] ) || empty( $uploaded['file'] ) ) {
 			STWM_Run::update( $run_id, array( 'status' => 'failed' ) );
-			self::set_notice( __( 'Could not save the uploaded file to the uploads directory.', 'shopify-to-woocommerce-migrator' ), 'error' );
+			$reason = is_array( $uploaded ) && isset( $uploaded['error'] ) ? $uploaded['error'] : __( 'unknown error', 'shopify-to-woocommerce-migrator' );
+			self::set_notice(
+				sprintf(
+					/* translators: %s: reason the upload failed */
+					__( 'Could not save the uploaded file: %s', 'shopify-to-woocommerce-migrator' ),
+					$reason
+				),
+				'error'
+			);
+			return false;
+		}
+
+		// Sniff the header row now the file is in place.
+		$csv_path = $dir['path'] . '/products.csv';
+		$fh       = fopen( $csv_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		$line     = $fh ? (string) fgets( $fh ) : '';
+		if ( $fh ) {
+			fclose( $fh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		}
+		if ( false === stripos( $line, 'Handle' ) || false === stripos( $line, 'Title' ) ) {
+			wp_delete_file( $csv_path );
+			STWM_Run::update( $run_id, array( 'status' => 'failed' ) );
+			self::set_notice( __( 'This CSV has no "Handle" / "Title" columns, so it is not a Shopify product export.', 'shopify-to-woocommerce-migrator' ), 'error' );
 			return false;
 		}
 
@@ -704,7 +787,7 @@ class STWM_Admin {
 		}
 		check_admin_referer( 'stwm_rollback' );
 
-		$run_id = isset( $_POST['stwm_run_id'] ) ? preg_replace( '/[^a-f0-9]/', '', (string) wp_unslash( $_POST['stwm_run_id'] ) ) : '';
+		$run_id = isset( $_POST['stwm_run_id'] ) ? preg_replace( '/[^a-f0-9]/', '', sanitize_text_field( wp_unslash( $_POST['stwm_run_id'] ) ) ) : '';
 		if ( '' === $run_id || empty( $_POST['stwm_confirm'] ) ) {
 			self::set_notice( __( 'Rollback was not confirmed.', 'shopify-to-woocommerce-migrator' ), 'error' );
 			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE . '&step=report' ) );

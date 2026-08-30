@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-30T07:24:28+00:00\n"
+"POT-Creation-Date: 2026-08-30T07:35:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: shopify-to-woocommerce-migrator\n"
@@ -34,146 +34,146 @@ msgstr ""
 msgid "Abid"
 msgstr ""
 
-#: includes/class-stwm-admin.php:24
+#: includes/class-stwm-admin.php:75
 msgid "Connect"
 msgstr ""
 
-#: includes/class-stwm-admin.php:25
+#: includes/class-stwm-admin.php:76
 msgid "Analyze"
 msgstr ""
 
-#: includes/class-stwm-admin.php:26
+#: includes/class-stwm-admin.php:77
 msgid "Migrate"
 msgstr ""
 
-#: includes/class-stwm-admin.php:27
+#: includes/class-stwm-admin.php:78
 msgid "Report"
 msgstr ""
 
-#: includes/class-stwm-admin.php:41
-#: includes/class-stwm-admin.php:42
+#: includes/class-stwm-admin.php:92
+#: includes/class-stwm-admin.php:93
 msgid "Shopify Import"
 msgstr ""
 
-#: includes/class-stwm-admin.php:86
+#: includes/class-stwm-admin.php:137
 msgid "You do not have permission to run migrations."
 msgstr ""
 
-#: includes/class-stwm-admin.php:92
+#: includes/class-stwm-admin.php:143
 msgid "Shopify → WooCommerce Migration"
 msgstr ""
 
-#: includes/class-stwm-admin.php:136
+#: includes/class-stwm-admin.php:187
 msgid "Upload your Shopify products CSV"
 msgstr ""
 
-#: includes/class-stwm-admin.php:137
+#: includes/class-stwm-admin.php:188
 msgid "In your Shopify admin: Products → Export → \"All products\", format \"Plain CSV file\". Upload that file here."
 msgstr ""
 
 #. translators: %s: server upload size limit, e.g. "8 MB".
-#: includes/class-stwm-admin.php:142
+#: includes/class-stwm-admin.php:193
 #, php-format
 msgid "Server upload limit: %s. Very large catalogues can be split into several exports. The file is analysed in the background after upload."
 msgstr ""
 
-#: includes/class-stwm-admin.php:146
+#: includes/class-stwm-admin.php:197
 msgid "Upload & analyze"
 msgstr ""
 
-#: includes/class-stwm-admin.php:154
-#: includes/class-stwm-admin.php:322
+#: includes/class-stwm-admin.php:205
+#: includes/class-stwm-admin.php:373
 msgid "No migration in progress."
 msgstr ""
 
-#: includes/class-stwm-admin.php:158
+#: includes/class-stwm-admin.php:209
 msgid "Start one"
 msgstr ""
 
-#: includes/class-stwm-admin.php:164
+#: includes/class-stwm-admin.php:215
 msgid "Analysing…"
 msgstr ""
 
-#: includes/class-stwm-admin.php:165
+#: includes/class-stwm-admin.php:216
 msgid "Reading the CSV in the background. This page refreshes automatically."
 msgstr ""
 
-#: includes/class-stwm-admin.php:171
+#: includes/class-stwm-admin.php:222
 msgid "Analysis failed"
 msgstr ""
 
-#: includes/class-stwm-admin.php:172
+#: includes/class-stwm-admin.php:223
 msgid "The file could not be read as a Shopify products export. See WooCommerce → Status → Logs (source: stwm) for details."
 msgstr ""
 
-#: includes/class-stwm-admin.php:176
+#: includes/class-stwm-admin.php:227
 msgid "Try another file"
 msgstr ""
 
-#: includes/class-stwm-admin.php:187
+#: includes/class-stwm-admin.php:238
 msgid "Ready to migrate"
 msgstr ""
 
 #. translators: %s: count
-#: includes/class-stwm-admin.php:189
+#: includes/class-stwm-admin.php:240
 #, php-format
 msgid "%s products"
 msgstr ""
 
 #. translators: %s: count
-#: includes/class-stwm-admin.php:190
+#: includes/class-stwm-admin.php:241
 #, php-format
 msgid "%s variant rows"
 msgstr ""
 
 #. translators: %s: count
-#: includes/class-stwm-admin.php:191
+#: includes/class-stwm-admin.php:242
 #, php-format
 msgid "%s image references"
 msgstr ""
 
-#: includes/class-stwm-admin.php:199
+#: includes/class-stwm-admin.php:250
 msgid "Fix the blocking issues above in your Shopify export, then upload the corrected file."
 msgstr ""
 
-#: includes/class-stwm-admin.php:203
+#: includes/class-stwm-admin.php:254
 msgid "Upload a corrected file"
 msgstr ""
 
-#: includes/class-stwm-admin.php:209
+#: includes/class-stwm-admin.php:260
 msgid "Options"
 msgstr ""
 
-#: includes/class-stwm-admin.php:213
+#: includes/class-stwm-admin.php:264
 msgid "Download product images into the media library"
 msgstr ""
 
-#: includes/class-stwm-admin.php:218
+#: includes/class-stwm-admin.php:269
 msgid "Import every product as Draft (review before publishing)"
 msgstr ""
 
-#: includes/class-stwm-admin.php:222
+#: includes/class-stwm-admin.php:273
 msgid "Products per batch"
 msgstr ""
 
-#: includes/class-stwm-admin.php:224
+#: includes/class-stwm-admin.php:275
 msgid "Lower this if image downloads make batches time out."
 msgstr ""
 
-#: includes/class-stwm-admin.php:226
+#: includes/class-stwm-admin.php:277
 msgid "Continue"
 msgstr ""
 
-#: includes/class-stwm-admin.php:246
+#: includes/class-stwm-admin.php:297
 msgid "Pre-flight checks passed — no problems found in the CSV."
 msgstr ""
 
-#: includes/class-stwm-admin.php:275
+#: includes/class-stwm-admin.php:326
 msgid "Pre-flight checks"
 msgstr ""
 
 #. translators: %s: count
-#: includes/class-stwm-admin.php:287
+#: includes/class-stwm-admin.php:338
 #, php-format
 msgid "%s blocking issue"
 msgid_plural "%s blocking issues"
@@ -181,7 +181,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: count
-#: includes/class-stwm-admin.php:293
+#: includes/class-stwm-admin.php:344
 #, php-format
 msgid "%s warning"
 msgid_plural "%s warnings"
@@ -189,190 +189,192 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: count
-#: includes/class-stwm-admin.php:294
+#: includes/class-stwm-admin.php:345
 msgid "the import will still run; these rows degrade gracefully."
 msgstr ""
 
 #. translators: 1: shown count, 2: total count
-#: includes/class-stwm-admin.php:306
+#: includes/class-stwm-admin.php:357
 #, php-format
 msgid "Showing %1$s of %2$s findings."
 msgstr ""
 
-#: includes/class-stwm-admin.php:329
+#: includes/class-stwm-admin.php:380
 msgid "This migration is already under way."
 msgstr ""
 
-#: includes/class-stwm-admin.php:331
+#: includes/class-stwm-admin.php:382
 msgid "View progress"
 msgstr ""
 
-#: includes/class-stwm-admin.php:339
+#: includes/class-stwm-admin.php:390
 msgid "Start the migration"
 msgstr ""
 
 #. translators: %s: product count
-#: includes/class-stwm-admin.php:345
+#: includes/class-stwm-admin.php:396
 #, php-format
 msgid "About to create up to %s products in WooCommerce. Batches run in the background — you can leave this page. The next screen has a rollback that removes everything this run creates."
 msgstr ""
 
-#: includes/class-stwm-admin.php:350
+#: includes/class-stwm-admin.php:401
 msgid "Start migration"
 msgstr ""
 
-#: includes/class-stwm-admin.php:357
+#: includes/class-stwm-admin.php:408
 msgid "Migration report"
 msgstr ""
 
-#: includes/class-stwm-admin.php:360
+#: includes/class-stwm-admin.php:411
 msgid "No migration run yet."
 msgstr ""
 
 #. translators: 1: done, 2: total, 3: failed, 4: variations, 5: images
-#: includes/class-stwm-admin.php:377
+#: includes/class-stwm-admin.php:428
 #, php-format
 msgid "Products: %1$s / %2$s created, %3$s failed. Variations: %4$s. Images: %5$s."
 msgstr ""
 
-#: includes/class-stwm-admin.php:388
+#: includes/class-stwm-admin.php:439
 msgid "Running in the background — this page refreshes every 10 seconds."
 msgstr ""
 
-#: includes/class-stwm-admin.php:395
+#: includes/class-stwm-admin.php:446
 msgid "Handle"
 msgstr ""
 
-#: includes/class-stwm-admin.php:396
+#: includes/class-stwm-admin.php:447
 msgid "Title"
 msgstr ""
 
-#: includes/class-stwm-admin.php:397
+#: includes/class-stwm-admin.php:448
 msgid "Product"
 msgstr ""
 
-#: includes/class-stwm-admin.php:398
+#: includes/class-stwm-admin.php:449
 msgid "Status"
 msgstr ""
 
-#: includes/class-stwm-admin.php:399
+#: includes/class-stwm-admin.php:450
 msgid "Note"
 msgstr ""
 
 #. translators: %s: total row count
-#: includes/class-stwm-admin.php:419
+#: includes/class-stwm-admin.php:470
 #, php-format
 msgid "Showing the latest 100 of %s products."
 msgstr ""
 
-#: includes/class-stwm-admin.php:432
+#: includes/class-stwm-admin.php:483
 msgid "Start another migration"
 msgstr ""
 
-#: includes/class-stwm-admin.php:436
+#: includes/class-stwm-admin.php:487
 msgid "Roll back this migration"
 msgstr ""
 
-#: includes/class-stwm-admin.php:437
+#: includes/class-stwm-admin.php:488
 msgid "Permanently deletes every product, variation and image this run created, and cancels any pending batches."
 msgstr ""
 
-#: includes/class-stwm-admin.php:441
+#: includes/class-stwm-admin.php:492
 msgid "Delete everything this migration created? This cannot be undone."
 msgstr ""
 
-#: includes/class-stwm-admin.php:448
+#: includes/class-stwm-admin.php:499
 msgid "Yes, I understand this deletes the imported data."
 msgstr ""
 
-#: includes/class-stwm-admin.php:452
+#: includes/class-stwm-admin.php:503
 msgid "Also delete imported images from the media library"
 msgstr ""
 
-#: includes/class-stwm-admin.php:454
+#: includes/class-stwm-admin.php:505
 msgid "Roll back"
 msgstr ""
 
-#: includes/class-stwm-admin.php:470
+#: includes/class-stwm-admin.php:521
 msgid "Log"
 msgstr ""
 
 #. translators: 1: errors, 2: warnings, 3: total
-#: includes/class-stwm-admin.php:476
+#: includes/class-stwm-admin.php:527
 #, php-format
 msgid "%1$s errors, %2$s warnings, %3$s entries total."
 msgstr ""
 
-#: includes/class-stwm-admin.php:486
+#: includes/class-stwm-admin.php:537
 msgid "Download full log (CSV)"
 msgstr ""
 
-#: includes/class-stwm-admin.php:494
+#: includes/class-stwm-admin.php:545
 msgid "Time (UTC)"
 msgstr ""
 
-#: includes/class-stwm-admin.php:495
+#: includes/class-stwm-admin.php:546
 msgid "Level"
 msgstr ""
 
-#: includes/class-stwm-admin.php:496
+#: includes/class-stwm-admin.php:547
 msgid "Item"
 msgstr ""
 
-#: includes/class-stwm-admin.php:497
+#: includes/class-stwm-admin.php:548
 msgid "Message"
 msgstr ""
 
 #. translators: 1: shown, 2: total
-#: includes/class-stwm-admin.php:516
+#: includes/class-stwm-admin.php:567
 #, php-format
 msgid "Showing the latest %1$s of %2$s entries — the CSV has everything."
 msgstr ""
 
-#: includes/class-stwm-admin.php:530
-#: includes/class-stwm-admin.php:558
-#: includes/class-stwm-admin.php:703
+#: includes/class-stwm-admin.php:581
+#: includes/class-stwm-admin.php:609
+#: includes/class-stwm-admin.php:786
 msgid "Permission denied."
 msgstr ""
 
-#: includes/class-stwm-admin.php:536
+#: includes/class-stwm-admin.php:587
 msgid "No run specified."
 msgstr ""
 
-#: includes/class-stwm-admin.php:632
+#: includes/class-stwm-admin.php:683
 msgid "No file received. Please choose a CSV file."
 msgstr ""
 
-#: includes/class-stwm-admin.php:639
+#: includes/class-stwm-admin.php:690
 msgid "The file is larger than this server allows. Export a smaller range from Shopify, or raise upload_max_filesize."
 msgstr ""
 
-#: includes/class-stwm-admin.php:640
+#: includes/class-stwm-admin.php:691
 msgid "The upload did not complete. Please try again."
 msgstr ""
 
-#: includes/class-stwm-admin.php:647
-msgid "Upload validation failed."
-msgstr ""
-
-#: includes/class-stwm-admin.php:654
+#: includes/class-stwm-admin.php:699
 msgid "That does not look like a .csv file."
 msgstr ""
 
-#: includes/class-stwm-admin.php:665
+#: includes/class-stwm-admin.php:748
+msgid "unknown error"
+msgstr ""
+
+#. translators: %s: reason the upload failed
+#: includes/class-stwm-admin.php:752
+#, php-format
+msgid "Could not save the uploaded file: %s"
+msgstr ""
+
+#: includes/class-stwm-admin.php:770
 msgid "This CSV has no \"Handle\" / \"Title\" columns, so it is not a Shopify product export."
 msgstr ""
 
-#: includes/class-stwm-admin.php:687
-msgid "Could not save the uploaded file to the uploads directory."
-msgstr ""
-
-#: includes/class-stwm-admin.php:709
+#: includes/class-stwm-admin.php:792
 msgid "Rollback was not confirmed."
 msgstr ""
 
 #. translators: 1: products deleted, 2: images deleted
-#: includes/class-stwm-admin.php:748
+#: includes/class-stwm-admin.php:831
 #, php-format
 msgid "Rolled back: %1$s products and %2$s images deleted."
 msgstr ""

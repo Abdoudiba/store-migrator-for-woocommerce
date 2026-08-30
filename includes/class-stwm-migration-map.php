@@ -20,6 +20,16 @@ defined( 'ABSPATH' ) || exit;
 
 class STWM_Migration_Map {
 
+	/*
+	 * This class is the data-access layer for the plugin's own custom table
+	 * (wp_stwm_map). Every method is a deliberate direct query: the rows are
+	 * migration bookkeeping written during a background job and read on the
+	 * report screen, so an object-cache layer would add staleness risk for no
+	 * real-world gain. Table identifiers use the %i placeholder; all values are
+	 * bound through $wpdb->prepare().
+	 */
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
 	/**
 	 * @return string Prefixed table name.
 	 */
@@ -148,22 +158,24 @@ class STWM_Migration_Map {
 	 */
 	public static function count( $run_id, $entity_type = '', $status = '' ) {
 		global $wpdb;
-		$where  = array( 'run_id = %s' );
-		$params = array( $run_id );
-		if ( '' !== $entity_type ) {
-			$where[]  = 'entity_type = %s';
-			$params[] = $entity_type;
-		}
-		if ( '' !== $status ) {
-			$where[]  = 'status = %s';
-			$params[] = $status;
-		}
-		// $where is assembled only from the literal fragments above; every value
-		// is bound through $wpdb->prepare().
-		$sql = 'SELECT COUNT(*) FROM %i WHERE ' . implode( ' AND ', $where );
-		array_unshift( $params, self::table() );
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- see comment above; fragments are fixed, values are placeholders.
-		return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+
+		// One fully-literal query. An empty $entity_type / $status short-circuits
+		// its condition ( '' = '' ), so no dynamic SQL assembly is needed.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i WHERE run_id = %s'
+					. ' AND ( %s = %s OR entity_type = %s )'
+					. ' AND ( %s = %s OR status = %s )',
+				self::table(),
+				$run_id,
+				$entity_type,
+				'',
+				$entity_type,
+				$status,
+				'',
+				$status
+			)
+		);
 	}
 
 	/**
@@ -202,4 +214,6 @@ class STWM_Migration_Map {
 		global $wpdb;
 		return (int) $wpdb->delete( self::table(), array( 'run_id' => $run_id ) );
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }

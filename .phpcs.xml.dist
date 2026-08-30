@@ -37,14 +37,9 @@
 	</rule>
 
 	<!--
-		The map and log classes exist solely to read and write the plugin's two
-		custom tables; a "use a core API instead" warning on every line is noise.
-		Object caching is deliberately not used: rows are migration bookkeeping,
-		written once and read on a report screen, never on a front-end request.
+		Direct-query warnings on the two custom-table data-access classes and on
+		uninstall.php are suppressed inline, at the code, with a justification
+		comment (phpcs:disable WordPress.DB.DirectDatabaseQuery.*). Nothing is
+		excluded here so the ruleset stays faithful to Plugin Check's defaults.
 	-->
-	<rule ref="WordPress.DB.DirectDatabaseQuery">
-		<exclude-pattern>/includes/class-stwm-migration-map.php</exclude-pattern>
-		<exclude-pattern>/includes/class-stwm-log.php</exclude-pattern>
-		<exclude-pattern>/uninstall.php</exclude-pattern>
-	</rule>
 </ruleset>

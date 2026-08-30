@@ -18,6 +18,15 @@ class STWM_Log {
 
 	const LEVELS = array( 'debug', 'info', 'warning', 'error' );
 
+	/*
+	 * Data-access layer for the plugin's own custom table (wp_stwm_log). Every
+	 * method is a deliberate direct query: log rows are written during a
+	 * background migration and read once on the report screen / CSV export, so an
+	 * object-cache layer adds staleness risk for no gain. Table identifiers use
+	 * the %i placeholder; values are bound through $wpdb->prepare().
+	 */
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
 	public static function table() {
 		global $wpdb;
 		return $wpdb->prefix . 'stwm_log';
@@ -130,4 +139,6 @@ class STWM_Log {
 		global $wpdb;
 		return (int) $wpdb->delete( self::table(), array( 'run_id' => $run_id ) );
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }
