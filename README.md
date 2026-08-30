@@ -5,7 +5,7 @@ Inspired by Cart2Cart / LitExtension, but delivered the way our other plugins
 are: a fully-functional free core on WordPress.org, a paid premium add-on sold
 from our own site, and a done-for-you migration service run with the same tool.
 
-**Status:** milestone 1 — scaffold only. The wizard is navigable; no data moves yet.
+**Status:** milestone 2 — CSV product import works end to end (upload → analyze → batched import → report → rollback). API tiers not started.
 
 ---
 
@@ -72,23 +72,42 @@ orders only through the `WC_Order` CRUD API.
 | `includes/class-stwm-install.php` | dbDelta schema, activate/deactivate, silent upgrade |
 | `includes/class-stwm-migration-map.php` | ID-map CRUD (`get_target`, `set`, `rows_for_run`, `delete_run`, …) |
 | `includes/class-stwm-run.php` | migration-run registry (option-backed for now) |
-| `includes/class-stwm-queue.php` | Action Scheduler batch pipeline + `handle_batch` dispatch point |
+| `includes/class-stwm-queue.php` | Action Scheduler batch pipeline; `handle_batch` dispatches `index` → `STWM_CSV`, `product` → `STWM_Product_Importer` |
+| `includes/class-stwm-csv.php` | reads the Shopify Products CSV; `build_index()` writes `products.index.json` (byte offset per Handle) and the analyze counts |
+| `includes/class-stwm-product-importer.php` | the `product` batch processor: CSV slice → simple/variable products, variants, images; re-enqueues the next slice |
+| `includes/stwm-helpers.php` | `stwm_col()`, `stwm_parse_price()`, `stwm_weight_from_grams()`, per-run upload dir, recursive rmdir |
 | `includes/class-stwm-logger.php` | logging wrapper |
-| `includes/class-stwm-admin.php` | the wizard (menu, steps, nonce'd POST handler) |
-| `uninstall.php` | drop table + options on delete |
+| `includes/class-stwm-admin.php` | the wizard (upload, analyze+options, run, report, rollback) |
+| `uninstall.php` | drop table + options + `uploads/stwm/` on delete |
 
 ## Roadmap
 
-1. **Scaffold** — this milestone. ✅
-2. **CSV product import** (free core): parse Shopify Products CSV → simple/variable products, images, tags, type→category. First WordPress.org-shippable slice.
-3. Rollback UI + dry-run + per-row report screen.
-4. **WordPress.org submission** of the free plugin.
+1. **Scaffold** — bootstrap, queue, ID map, wizard shell. ✅
+2. **CSV product import** (free core): Shopify Products CSV → simple/variable products, variants, images, tags, type→category; batched, resumable, with rollback and a live report. ✅
+3. Dry-run / analyze preview of *problems* (duplicate SKUs, unreachable images, malformed rows) before writing; downloadable per-row log table.
+4. **WordPress.org submission** of the free plugin (settle the public slug — see below).
 5. Premium add-on skeleton + license check (reuse the ysqd approach — no Freemius cut).
 6. Shopify Admin API client (REST first, respect the 2 req/s bucket) → products + collections.
 7. Customers + orders via API (status mapping: paid+fulfilled → completed, paid+unfulfilled → processing, …).
 8. Coupons, 301 redirects, blog posts + pages.
 9. Incremental mode ("import orders since last run").
 10. Launch premium (~$69 single / $99 3-site / $199 agency) + list the done-for-you service.
+
+## Milestone 2 known limitations
+
+- **No product ID in the CSV**, so the source key is the `Handle`. Two Shopify
+  products that somehow share a handle would collide; a genuine export can't.
+- Rows for one handle are assumed **contiguous** (always true in a real Shopify
+  export; hand-sorted files could break the byte-offset index).
+- Re-running leaves **orphaned variations** if a variant was removed from the
+  CSV between runs — they aren't pruned yet.
+- Categories come only from the `Type` column. **Collections** need the Admin
+  API (premium).
+- Image sideload is synchronous inside the batch; on slow hosts, lower
+  "Products per batch". A failed Action Scheduler batch is retried, and the
+  import is idempotent, so retries are safe.
+- `Cost per item` and `Variant Barcode` (when the WooCommerce GTIN field is
+  absent) are stored as `_stwm_*` post meta, not surfaced in the UI.
 
 ## Notes for submission
 

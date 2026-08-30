@@ -78,33 +78,31 @@ class STWM_Queue {
 	}
 
 	/**
-	 * Action Scheduler callback for one batch.
-	 *
-	 * Milestone 1: no entity processors yet, so this just records that the
-	 * pipeline fired end-to-end. Milestone 2 switches on $payload['entity_type']
-	 * and calls the matching importer, which re-enqueues the next offset until
-	 * the entity is exhausted.
+	 * Action Scheduler callback for one batch. Dispatches on entity type; each
+	 * processor re-enqueues its next offset until its source is exhausted.
 	 *
 	 * @param array $payload Passed through from enqueue_batch()/schedule_batch().
 	 */
 	public static function handle_batch( $payload ) {
 		$payload = is_array( $payload ) ? $payload : array();
-		$type    = isset( $payload['entity_type'] ) ? (string) $payload['entity_type'] : 'unknown';
-		$offset  = isset( $payload['offset'] ) ? (int) $payload['offset'] : 0;
+		$type    = isset( $payload['entity_type'] ) ? (string) $payload['entity_type'] : '';
 		$run_id  = isset( $payload['run_id'] ) ? (string) $payload['run_id'] : '';
 
-		STWM_Logger::info(
-			sprintf(
-				'Batch received: run=%s entity=%s offset=%d — no processor registered yet (milestone 1).',
-				$run_id,
-				$type,
-				$offset
-			)
-		);
+		switch ( $type ) {
+			case 'index':
+				STWM_CSV::build_index( $run_id );
+				return;
+
+			case 'product':
+				STWM_Product_Importer::run_batch( $payload );
+				return;
+		}
+
+		STWM_Logger::warning( sprintf( 'Batch with unknown entity_type "%s" (run %s) ignored.', $type, $run_id ) );
 
 		/**
-		 * Fires for each queued batch. Milestone 2's importers hook here (or
-		 * handle_batch() dispatches to them directly).
+		 * Fires for a batch this class does not itself handle, so future
+		 * entity processors (customers, orders, …) can hook in.
 		 *
 		 * @param array $payload
 		 */

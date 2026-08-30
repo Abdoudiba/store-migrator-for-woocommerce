@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.0
-Stable tag: 0.1.0-dev
+Stable tag: 0.2.0-dev
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,7 +79,16 @@ second run updates the existing product.
 
 == Changelog ==
 
+= 0.2.0-dev =
+* Product import from the Shopify Products CSV: simple and variable products,
+  variants (price, sale price from Compare At, SKU, stock, backorders, weight,
+  barcode, tax, virtual), product type as category, tags, vendor, SEO fields,
+  and product + variant images sideloaded into the media library.
+* Background index pass over the uploaded CSV, then batched import through
+  Action Scheduler with a live progress report.
+* One-click rollback: deletes every product, variation and image a run created.
+* Re-running an import updates products in place instead of duplicating them.
+
 = 0.1.0-dev =
 * Scaffold: plugin bootstrap, Action Scheduler batch pipeline, ID-map table,
-  migration-run registry, and the navigable import wizard shell. No data is
-  moved yet.
+  migration-run registry, and the navigable import wizard shell.
