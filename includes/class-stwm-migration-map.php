@@ -13,7 +13,7 @@
  * entity_type is one of: product, variation, category, customer, order, coupon,
  * redirect, page, post.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;

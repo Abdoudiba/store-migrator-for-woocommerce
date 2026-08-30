@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Shopify to WooCommerce Migrator">
+<ruleset name="Store Migrator for WooCommerce">
 	<description>Coding standards for WordPress.org submission (WordPress-Extra: Core + Extra, minus the doc-block perfectionism of WordPress-Docs, which plugin review does not gate on).</description>
 
 	<file>.</file>
@@ -22,7 +22,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="shopify-to-woocommerce-migrator"/>
+				<element value="store-migrator-for-woocommerce"/>
 			</property>
 		</properties>
 	</rule>

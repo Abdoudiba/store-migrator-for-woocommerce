@@ -9,7 +9,7 @@
  * wp_stwm_log here. Entries are still mirrored to wc_get_logger() so stores that
  * do have logging on keep a copy in WooCommerce → Status → Logs.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;

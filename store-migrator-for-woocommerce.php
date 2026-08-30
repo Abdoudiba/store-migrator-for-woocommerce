@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:       Shopify to WooCommerce Migrator
- * Plugin URI:        https://github.com/Abdoudiba/shopify-to-woocommerce-migrator
- * Description:        Migrate a Shopify store into WooCommerce — products, variants and images (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable.
+ * Plugin Name:       Store Migrator for WooCommerce
+ * Plugin URI:        https://github.com/Abdoudiba/store-migrator-for-woocommerce
+ * Description:        Migrate a Shopify store into WooCommerce — products, variants and images from a CSV export (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable.
  * Version:           0.3.0-dev
  * Requires at least: 6.4
  * Requires PHP:      7.4
@@ -11,9 +11,9 @@
  * Author:            Abid
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       shopify-to-woocommerce-migrator
+ * Text Domain:       store-migrator-for-woocommerce
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -41,7 +41,7 @@ register_deactivation_hook( __FILE__, array( 'STWM_Install', 'deactivate' ) );
  */
 function stwm_woocommerce_missing_notice() {
 	echo '<div class="notice notice-error"><p>' .
-		esc_html__( 'Shopify to WooCommerce Migrator requires WooCommerce to be installed and active.', 'shopify-to-woocommerce-migrator' ) .
+		esc_html__( 'Store Migrator for WooCommerce requires WooCommerce to be installed and active.', 'store-migrator-for-woocommerce' ) .
 		'</p></div>';
 }
 

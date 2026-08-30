@@ -1,11 +1,13 @@
-# Shopify to WooCommerce Migrator
+# Store Migrator for WooCommerce
 
 A freemium WordPress plugin that migrates a Shopify store into WooCommerce.
 Inspired by Cart2Cart / LitExtension, but delivered the way our other plugins
 are: a fully-functional free core on WordPress.org, a paid premium add-on sold
 from our own site, and a done-for-you migration service run with the same tool.
 
-**Status:** milestone 3 — CSV product import + dry-run pre-flight checks + own per-run log (CSV export) + crash-safe map writes. Validated end to end on a live WooCommerce test site. API/premium tiers not started; next is WP.org submission prep.
+**Status:** milestone 4 — WP.org submission prep. CSV product import + dry-run pre-flight + own per-run log + crash-safe map writes, validated end to end on a live WooCommerce test site. `vendor/bin/phpcs` clean; Plugin Check clean after the rename to a "… for WooCommerce"-pattern name. Remaining before submit: assets (icon/banner/screenshots), drop `-dev` → `0.3.0`. API/premium tiers = M5+.
+
+The plugin's public identity is **Store Migrator for WooCommerce** / slug `store-migrator-for-woocommerce`. The internal code prefix stays `stwm` / `STWM` (unique, 4+ chars — all WP.org requires; matching it to the slug would churn 10 classes, 2 tables, and every option/hook for no review benefit).
 
 ---
 
@@ -75,7 +77,7 @@ orders only through the `WC_Order` CRUD API.
 
 | File | Role |
 |------|------|
-| `shopify-to-woocommerce-migrator.php` | bootstrap, constants, WC guard, activation hooks, HPOS declaration |
+| `store-migrator-for-woocommerce.php` | bootstrap, constants, WC guard, activation hooks, HPOS declaration |
 | `includes/class-stwm-install.php` | dbDelta schema, activate/deactivate, silent upgrade |
 | `includes/class-stwm-migration-map.php` | ID-map CRUD (`get_target`, `set`, `rows_for_run`, `delete_run`, …) |
 | `includes/class-stwm-run.php` | migration-run registry (option-backed for now) |
@@ -93,7 +95,7 @@ orders only through the `WC_Order` CRUD API.
 1. **Scaffold** — bootstrap, queue, ID map, wizard shell. ✅
 2. **CSV product import** (free core): Shopify Products CSV → simple/variable products, variants, images, tags, type→category; batched, resumable, with rollback and a live report. ✅
 3. Dry-run pre-flight (dup SKUs, unreachable images, malformed rows), own per-run log table + CSV export, crash-safe map writes. ✅
-4. **WordPress.org submission** of the free plugin (settle the public slug — see below): `.pot`, screenshots/banner/icon, readme polish, PHPCS (WPCS) pass.
+4. **WordPress.org submission prep**: WPCS pass (clean), `.pot`, readme polish, Plugin Check (clean), rename to `store-migrator-for-woocommerce`. ✅ — remaining: icon/banner/screenshots, version `0.3.0`.
 5. Premium add-on skeleton + license check (reuse the ysqd approach — no Freemius cut).
 6. Shopify Admin API client (REST first, respect the 2 req/s bucket) → products + collections.
 7. Customers + orders via API (status mapping: paid+fulfilled → completed, paid+unfulfilled → processing, …).
@@ -119,11 +121,12 @@ orders only through the `WC_Order` CRUD API.
 
 ## Notes for submission
 
-- **Slug / name.** WordPress.org trademark rules discourage a plugin name that
-  leads with "Shopify". Decide the public slug at submission time — likely
-  `shopify-to-woocommerce-migrator` survives as descriptive use (cf. VillaTheme's
-  "S2W – Import Shopify to WooCommerce"), but have a fallback like
-  "Store Importer for WooCommerce".
+- **Slug / name — settled.** `store-migrator-for-woocommerce` / "Store Migrator
+  for WooCommerce". WP.org's Plugin Check only permits "woocommerce" in a name
+  or slug in the patterns "for/with/using/and woocommerce", which rules out the
+  original "X to WooCommerce" form; "Shopify" is a third-party mark so it can't
+  lead either. It stays prominent in the readme title line, short description
+  and tags for search.
 - Free plugin must be **fully functional** without premium; gate by entity
   *type*, never by row count.
 - Prefix everything `stwm_` / `STWM_`; sanitize + escape; no external calls

@@ -7,7 +7,7 @@
  * products and customers, and is what a later "incremental re-run" mode reads
  * to know what has already been brought over.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;

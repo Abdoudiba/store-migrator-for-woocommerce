@@ -8,7 +8,7 @@
  * contiguous in a genuine export, which lets us record a byte offset per group
  * during the index pass and fseek() straight to it when a batch runs.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;

@@ -9,7 +9,7 @@
  * duplicating. Every created object is recorded in STWM_Migration_Map so the
  * run can be rolled back.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;

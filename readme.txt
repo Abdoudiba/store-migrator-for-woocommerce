@@ -1,6 +1,6 @@
-=== Shopify to WooCommerce Migrator ===
+=== Store Migrator for WooCommerce ===
 Contributors: abdoudiba
-Tags: woocommerce, shopify, migration, import, csv importer
+Tags: shopify, woocommerce, migration, import, csv importer
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -11,11 +11,11 @@ Stable tag: 0.3.0-dev
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Move a Shopify store into WooCommerce — products, variants and images from a CSV export, batched and resumable, with a full rollback.
+Migrate a Shopify store into WooCommerce — products, variants and images from a CSV export, batched and resumable, with a full rollback.
 
 == Description ==
 
-Shopify to WooCommerce Migrator brings a Shopify catalogue into WooCommerce
+Store Migrator for WooCommerce brings a Shopify catalogue into WooCommerce
 without a hosted middleman. You export the standard CSV files from your Shopify
 admin, upload them here, and the plugin creates the matching WooCommerce
 products.

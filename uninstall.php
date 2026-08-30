@@ -3,7 +3,7 @@
  * Remove everything the plugin stored: the two custom tables, its options, and
  * the per-run upload directory. Runs only on "Delete" from the Plugins screen.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;

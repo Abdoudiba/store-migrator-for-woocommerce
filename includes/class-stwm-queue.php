@@ -13,7 +13,7 @@
  * processors (product / category / customer / order / coupon) arrive in
  * milestone 2 and are dispatched from handle_batch().
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;

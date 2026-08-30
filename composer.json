@@ -1,5 +1,5 @@
 {
-	"name": "abdoudiba/shopify-to-woocommerce-migrator",
+	"name": "abdoudiba/store-migrator-for-woocommerce",
 	"description": "Migrate a Shopify store into WooCommerce — products, variants and images, batched and resumable.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",

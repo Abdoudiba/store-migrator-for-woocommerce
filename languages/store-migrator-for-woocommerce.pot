@@ -2,35 +2,35 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Shopify to WooCommerce Migrator 0.3.0-dev\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/shopify-to-woocommerce-migrator\n"
+"Project-Id-Version: Store Migrator for WooCommerce 0.3.0-dev\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/store-migrator-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-30T07:35:18+00:00\n"
+"POT-Creation-Date: 2026-08-30T22:21:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: shopify-to-woocommerce-migrator\n"
+"X-Domain: store-migrator-for-woocommerce\n"
 
 #. Plugin Name of the plugin
-#: shopify-to-woocommerce-migrator.php
-msgid "Shopify to WooCommerce Migrator"
+#: store-migrator-for-woocommerce.php
+msgid "Store Migrator for WooCommerce"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: shopify-to-woocommerce-migrator.php
-msgid "https://github.com/Abdoudiba/shopify-to-woocommerce-migrator"
+#: store-migrator-for-woocommerce.php
+msgid "https://github.com/Abdoudiba/store-migrator-for-woocommerce"
 msgstr ""
 
 #. Description of the plugin
-#: shopify-to-woocommerce-migrator.php
-msgid "Migrate a Shopify store into WooCommerce — products, variants and images (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable."
+#: store-migrator-for-woocommerce.php
+msgid "Migrate a Shopify store into WooCommerce — products, variants and images from a CSV export (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable."
 msgstr ""
 
 #. Author of the plugin
-#: shopify-to-woocommerce-migrator.php
+#: store-migrator-for-woocommerce.php
 msgid "Abid"
 msgstr ""
 
@@ -379,6 +379,6 @@ msgstr ""
 msgid "Rolled back: %1$s products and %2$s images deleted."
 msgstr ""
 
-#: shopify-to-woocommerce-migrator.php:44
-msgid "Shopify to WooCommerce Migrator requires WooCommerce to be installed and active."
+#: store-migrator-for-woocommerce.php:44
+msgid "Store Migrator for WooCommerce requires WooCommerce to be installed and active."
 msgstr ""

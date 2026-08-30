@@ -4,7 +4,7 @@
  * one place (WooCommerce → Status → Logs, source "stwm"). A dedicated,
  * downloadable per-row log table is planned for a later milestone.
  *
- * @package Shopify_To_WooCommerce_Migrator
+ * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
