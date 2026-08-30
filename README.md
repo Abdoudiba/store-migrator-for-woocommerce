@@ -5,7 +5,7 @@ Inspired by Cart2Cart / LitExtension, but delivered the way our other plugins
 are: a fully-functional free core on WordPress.org, a paid premium add-on sold
 from our own site, and a done-for-you migration service run with the same tool.
 
-**Status:** milestone 2 — CSV product import works end to end (upload → analyze → batched import → report → rollback). API tiers not started.
+**Status:** milestone 3 — CSV product import + dry-run pre-flight checks + own per-run log (CSV export) + crash-safe map writes. Validated end to end on a live WooCommerce test site. API/premium tiers not started; next is WP.org submission prep.
 
 ---
 
@@ -58,8 +58,15 @@ STWM_Migration_Map   custom table wp_stwm_map, keyed by (entity_type, source_id)
                      • incremental — skip source IDs already present
 ```
 
-`STWM_Logger` wraps `wc_get_logger()` (WooCommerce → Status → Logs, source
-`stwm`). A dedicated downloadable per-row log table comes later.
+`STWM_Log` writes every run event to the plugin's own `wp_stwm_log` table
+(shown on the report screen, downloadable as CSV) and mirrors each line to
+`wc_get_logger()` for stores that have WooCommerce logging enabled — the table
+is the source of truth because many stores keep WC logging off.
+
+`STWM_CSV::build_index()` also does the dry-run pre-flight: duplicate SKUs,
+unparseable prices, title-less rows, missing columns, and a bounded HTTP check
+of image URLs, stored on the run as `problems` and rendered on the Analyze
+step. Error-level findings block the import.
 
 HPOS: the plugin declares `custom_order_tables` compatibility and will create
 orders only through the `WC_Order` CRUD API.
@@ -73,19 +80,20 @@ orders only through the `WC_Order` CRUD API.
 | `includes/class-stwm-migration-map.php` | ID-map CRUD (`get_target`, `set`, `rows_for_run`, `delete_run`, …) |
 | `includes/class-stwm-run.php` | migration-run registry (option-backed for now) |
 | `includes/class-stwm-queue.php` | Action Scheduler batch pipeline; `handle_batch` dispatches `index` → `STWM_CSV`, `product` → `STWM_Product_Importer` |
-| `includes/class-stwm-csv.php` | reads the Shopify Products CSV; `build_index()` writes `products.index.json` (byte offset per Handle) and the analyze counts |
+| `includes/class-stwm-csv.php` | reads the Shopify Products CSV; `build_index()` writes `products.index.json` (byte offset per Handle), the analyze counts, and the dry-run `problems` list |
 | `includes/class-stwm-product-importer.php` | the `product` batch processor: CSV slice → simple/variable products, variants, images; re-enqueues the next slice |
 | `includes/stwm-helpers.php` | `stwm_col()`, `stwm_parse_price()`, `stwm_weight_from_grams()`, per-run upload dir, recursive rmdir |
-| `includes/class-stwm-logger.php` | logging wrapper |
-| `includes/class-stwm-admin.php` | the wizard (upload, analyze+options, run, report, rollback) |
-| `uninstall.php` | drop table + options + `uploads/stwm/` on delete |
+| `includes/class-stwm-logger.php` | thin `wc_get_logger()` wrapper (non-run-scoped lines) |
+| `includes/class-stwm-log.php` | per-run log — `wp_stwm_log` table, counts, CSV export |
+| `includes/class-stwm-admin.php` | the wizard (upload, analyze + pre-flight + options, run, report + log, rollback, CSV export) |
+| `uninstall.php` | drop both tables + options + `uploads/stwm/` on delete |
 
 ## Roadmap
 
 1. **Scaffold** — bootstrap, queue, ID map, wizard shell. ✅
 2. **CSV product import** (free core): Shopify Products CSV → simple/variable products, variants, images, tags, type→category; batched, resumable, with rollback and a live report. ✅
-3. Dry-run / analyze preview of *problems* (duplicate SKUs, unreachable images, malformed rows) before writing; downloadable per-row log table.
-4. **WordPress.org submission** of the free plugin (settle the public slug — see below).
+3. Dry-run pre-flight (dup SKUs, unreachable images, malformed rows), own per-run log table + CSV export, crash-safe map writes. ✅
+4. **WordPress.org submission** of the free plugin (settle the public slug — see below): `.pot`, screenshots/banner/icon, readme polish, PHPCS (WPCS) pass.
 5. Premium add-on skeleton + license check (reuse the ysqd approach — no Freemius cut).
 6. Shopify Admin API client (REST first, respect the 2 req/s bucket) → products + collections.
 7. Customers + orders via API (status mapping: paid+fulfilled → completed, paid+unfulfilled → processing, …).
@@ -93,7 +101,7 @@ orders only through the `WC_Order` CRUD API.
 9. Incremental mode ("import orders since last run").
 10. Launch premium (~$69 single / $99 3-site / $199 agency) + list the done-for-you service.
 
-## Milestone 2 known limitations
+## Known limitations
 
 - **No product ID in the CSV**, so the source key is the `Handle`. Two Shopify
   products that somehow share a handle would collide; a genuine export can't.

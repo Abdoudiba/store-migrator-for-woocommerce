@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.0
-Stable tag: 0.2.0-dev
+Stable tag: 0.3.0-dev
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,18 @@ No. Matching is by the Shopify source ID (then by SKU as a fallback), so a
 second run updates the existing product.
 
 == Changelog ==
+
+= 0.3.0-dev =
+* Pre-flight checks on the Analyze step: a dry run over the CSV flags duplicate
+  SKUs, unparseable prices, rows with no title, missing columns and unreachable
+  image URLs before anything is written. Blocking issues stop the import until
+  the file is corrected; warnings are shown but let the run proceed.
+* The plugin now keeps its own per-run log (independent of WooCommerce's logger,
+  which many stores have switched off), shown on the report screen and
+  downloadable as CSV.
+* Crash-safety: a product's mapping row is written the moment the product is
+  created, before its images and variations, so a batch that dies partway can
+  still be rolled back cleanly and the next run updates in place.
 
 = 0.2.0-dev =
 * Product import from the Shopify Products CSV: simple and variable products,

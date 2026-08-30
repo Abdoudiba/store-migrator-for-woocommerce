@@ -18,15 +18,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STWM_VERSION', '0.2.0-dev' );
+define( 'STWM_VERSION', '0.3.0-dev' );
 define( 'STWM_PLUGIN_FILE', __FILE__ );
 define( 'STWM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'STWM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'STWM_DB_VERSION', '1' );
+define( 'STWM_DB_VERSION', '2' );
 
 // Primitives (no WooCommerce classes touched at load time): safe to require
 // unconditionally so the activation hook can reach STWM_Install.
 require_once STWM_PLUGIN_DIR . 'includes/class-stwm-logger.php';
+require_once STWM_PLUGIN_DIR . 'includes/class-stwm-log.php';
 require_once STWM_PLUGIN_DIR . 'includes/class-stwm-install.php';
 require_once STWM_PLUGIN_DIR . 'includes/class-stwm-migration-map.php';
 require_once STWM_PLUGIN_DIR . 'includes/class-stwm-run.php';

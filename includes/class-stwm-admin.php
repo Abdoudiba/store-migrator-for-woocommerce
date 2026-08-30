@@ -32,6 +32,7 @@ class STWM_Admin {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
 		add_action( 'admin_post_stwm_wizard', array( __CLASS__, 'handle_post' ) );
 		add_action( 'admin_post_stwm_rollback', array( __CLASS__, 'handle_rollback' ) );
+		add_action( 'admin_post_stwm_log_csv', array( __CLASS__, 'handle_log_csv' ) );
 	}
 
 	public static function menu() {
@@ -183,7 +184,19 @@ class STWM_Admin {
 		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s image references', 'shopify-to-woocommerce-migrator' ), number_format_i18n( $stats['images'] ) ) ) );
 		echo '</ul>';
 
+		$has_errors = self::render_preflight( $run );
+
 		$opts = isset( $run['options'] ) ? $run['options'] : array();
+
+		if ( $has_errors ) {
+			echo '<p>' . esc_html__( 'Fix the blocking issues above in your Shopify export, then upload the corrected file.', 'shopify-to-woocommerce-migrator' ) . '</p>';
+			printf(
+				'<p><a class="button button-primary" href="%s">%s</a></p>',
+				esc_url( admin_url( 'admin.php?page=' . self::PAGE . '&step=connect' ) ),
+				esc_html__( 'Upload a corrected file', 'shopify-to-woocommerce-migrator' )
+			);
+			return;
+		}
 
 		self::form_open( 'analyze' );
 		echo '<h3>' . esc_html__( 'Options', 'shopify-to-woocommerce-migrator' ) . '</h3>';
@@ -204,6 +217,67 @@ class STWM_Admin {
 			esc_html__( 'Lower this if image downloads make batches time out.', 'shopify-to-woocommerce-migrator' )
 		);
 		self::form_close( __( 'Continue', 'shopify-to-woocommerce-migrator' ) );
+	}
+
+	/**
+	 * Render the dry-run findings from STWM_CSV::build_index().
+	 *
+	 * @param array $run
+	 * @return bool True if there is at least one blocking (error-level) problem.
+	 */
+	private static function render_preflight( array $run ) {
+		$problems = isset( $run['problems'] ) && is_array( $run['problems'] ) ? $run['problems'] : array();
+		$counts   = isset( $run['problem_counts'] ) ? $run['problem_counts'] : array( 'error' => 0, 'warning' => 0, 'info' => 0 );
+		$total    = isset( $run['problem_total'] ) ? (int) $run['problem_total'] : count( $problems );
+
+		if ( ! $problems ) {
+			echo '<p><span class="dashicons dashicons-yes" style="color:#008a20;"></span> ' .
+				esc_html__( 'Pre-flight checks passed — no problems found in the CSV.', 'shopify-to-woocommerce-migrator' ) . '</p>';
+			return false;
+		}
+
+		$errors   = array_values( array_filter( $problems, static function ( $p ) { return 'error' === $p['level']; } ) );
+		$warnings = array_values( array_filter( $problems, static function ( $p ) { return 'warning' === $p['level']; } ) );
+		$infos    = array_values( array_filter( $problems, static function ( $p ) { return 'info' === $p['level']; } ) );
+
+		echo '<h3>' . esc_html__( 'Pre-flight checks', 'shopify-to-woocommerce-migrator' ) . '</h3>';
+
+		$render_list = static function ( $items ) {
+			echo '<ul style="list-style:disc;margin:.3em 0 1em 1.5em;">';
+			foreach ( $items as $it ) {
+				echo '<li>' . esc_html( $it['message'] ) . '</li>';
+			}
+			echo '</ul>';
+		};
+
+		if ( $errors ) {
+			echo '<div class="notice notice-error inline"><p><strong>' .
+				esc_html( sprintf( /* translators: %s: count */ _n( '%s blocking issue', '%s blocking issues', count( $errors ), 'shopify-to-woocommerce-migrator' ), number_format_i18n( count( $errors ) ) ) ) .
+				'</strong></p></div>';
+			$render_list( $errors );
+		}
+		if ( $warnings ) {
+			echo '<div class="notice notice-warning inline"><p><strong>' .
+				esc_html( sprintf( /* translators: %s: count */ _n( '%s warning', '%s warnings', count( $warnings ), 'shopify-to-woocommerce-migrator' ), number_format_i18n( count( $warnings ) ) ) ) .
+				'</strong> — ' . esc_html__( 'the import will still run; these rows degrade gracefully.', 'shopify-to-woocommerce-migrator' ) . '</p></div>';
+			$render_list( $warnings );
+		}
+		if ( $infos ) {
+			$render_list( $infos );
+		}
+		if ( $total > count( $problems ) ) {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html( sprintf(
+					/* translators: 1: shown count, 2: total count */
+					__( 'Showing %1$s of %2$s findings.', 'shopify-to-woocommerce-migrator' ),
+					number_format_i18n( count( $problems ) ),
+					number_format_i18n( $total )
+				) )
+			);
+		}
+
+		return ! empty( $errors );
 	}
 
 	private static function step_run() {
@@ -303,12 +377,14 @@ class STWM_Admin {
 					'<p class="description">%s</p>',
 					esc_html( sprintf(
 						/* translators: %s: total row count */
-						__( 'Showing the latest 100 of %s rows. Full detail is in WooCommerce → Status → Logs (source: stwm).', 'shopify-to-woocommerce-migrator' ),
+						__( 'Showing the latest 100 of %s products.', 'shopify-to-woocommerce-migrator' ),
 						number_format_i18n( count( $rows ) )
 					) )
 				);
 			}
 		}
+
+		self::render_log_section( $run_id );
 
 		printf(
 			'<p style="margin-top:1em;"><a class="button" href="%s">%s</a></p>',
@@ -338,6 +414,97 @@ class STWM_Admin {
 			submit_button( __( 'Roll back', 'shopify-to-woocommerce-migrator' ), 'delete' );
 			echo '</form>';
 		}
+	}
+
+	/**
+	 * The run's log: counts, a CSV download, and the latest rows.
+	 */
+	private static function render_log_section( $run_id ) {
+		$total = STWM_Log::count( $run_id );
+		if ( ! $total ) {
+			return;
+		}
+		$n_error = STWM_Log::count( $run_id, 'error' );
+		$n_warn  = STWM_Log::count( $run_id, 'warning' );
+
+		echo '<hr /><h3>' . esc_html__( 'Log', 'shopify-to-woocommerce-migrator' ) . '</h3>';
+		printf(
+			'<p>%s ',
+			esc_html( sprintf(
+				/* translators: 1: errors, 2: warnings, 3: total */
+				__( '%1$s errors, %2$s warnings, %3$s entries total.', 'shopify-to-woocommerce-migrator' ),
+				number_format_i18n( $n_error ),
+				number_format_i18n( $n_warn ),
+				number_format_i18n( $total )
+			) )
+		);
+		printf(
+			'<a class="button" href="%s">%s</a></p>',
+			esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=stwm_log_csv&run=' . rawurlencode( $run_id ) ), 'stwm_log_csv' ) ),
+			esc_html__( 'Download full log (CSV)', 'shopify-to-woocommerce-migrator' )
+		);
+
+		$log_rows = STWM_Log::rows( $run_id, 100 );
+		if ( ! $log_rows ) {
+			return;
+		}
+		echo '<table class="widefat striped"><thead><tr>';
+		echo '<th>' . esc_html__( 'Time (UTC)', 'shopify-to-woocommerce-migrator' ) . '</th>';
+		echo '<th>' . esc_html__( 'Level', 'shopify-to-woocommerce-migrator' ) . '</th>';
+		echo '<th>' . esc_html__( 'Item', 'shopify-to-woocommerce-migrator' ) . '</th>';
+		echo '<th>' . esc_html__( 'Message', 'shopify-to-woocommerce-migrator' ) . '</th>';
+		echo '</tr></thead><tbody>';
+		foreach ( $log_rows as $r ) {
+			$item = trim( $r->entity_type . ' ' . $r->source_id );
+			printf(
+				'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+				esc_html( $r->created_at ),
+				esc_html( $r->level ),
+				esc_html( '' !== $item ? $item : '—' ),
+				esc_html( $r->message )
+			);
+		}
+		echo '</tbody></table>';
+		if ( $total > count( $log_rows ) ) {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html( sprintf(
+					/* translators: 1: shown, 2: total */
+					__( 'Showing the latest %1$s of %2$s entries — the CSV has everything.', 'shopify-to-woocommerce-migrator' ),
+					number_format_i18n( count( $log_rows ) ),
+					number_format_i18n( $total )
+				) )
+			);
+		}
+	}
+
+	/**
+	 * Stream the full run log as a CSV download.
+	 */
+	public static function handle_log_csv() {
+		if ( ! current_user_can( self::CAP ) ) {
+			wp_die( esc_html__( 'Permission denied.', 'shopify-to-woocommerce-migrator' ) );
+		}
+		check_admin_referer( 'stwm_log_csv' );
+
+		$run_id = isset( $_GET['run'] ) ? preg_replace( '/[^a-f0-9]/', '', (string) wp_unslash( $_GET['run'] ) ) : '';
+		if ( '' === $run_id ) {
+			wp_die( esc_html__( 'No run specified.', 'shopify-to-woocommerce-migrator' ) );
+		}
+
+		$rows = STWM_Log::all_for_csv( $run_id );
+
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=stwm-log-' . $run_id . '.csv' );
+
+		$out = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		fputcsv( $out, array( 'time_utc', 'level', 'entity_type', 'source_id', 'message' ) );
+		foreach ( $rows as $r ) {
+			fputcsv( $out, array( $r->created_at, $r->level, $r->entity_type, $r->source_id, $r->message ) );
+		}
+		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		exit;
 	}
 
 	/* --- POST handlers --------------------------------------------------- */
@@ -514,6 +681,7 @@ class STWM_Admin {
 			}
 		}
 
+		STWM_Log::info( $run_id, sprintf( 'Rolled back: %d products and %d images deleted.', $deleted_p, $deleted_i ) );
 		STWM_Migration_Map::delete_run( $run_id );
 		STWM_Run::update( $run_id, array( 'status' => 'rolled_back' ) );
 

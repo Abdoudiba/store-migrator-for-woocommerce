@@ -52,7 +52,7 @@ class STWM_Product_Importer {
 			return;
 		}
 		if ( 'running' !== $run['status'] ) {
-			STWM_Logger::info( sprintf( 'Run %s status is "%s" — batch skipped.', $run_id, $run['status'] ) );
+			STWM_Log::info( $run_id, sprintf( 'Batch skipped — run status is "%s".', $run['status'] ) );
 			return;
 		}
 
@@ -60,7 +60,7 @@ class STWM_Product_Importer {
 		$csv_path   = $dir['path'] . '/products.csv';
 		$index_path = $dir['path'] . '/products.index.json';
 		if ( ! file_exists( $csv_path ) || ! file_exists( $index_path ) ) {
-			STWM_Logger::error( sprintf( 'Run %s: CSV or index file missing.', $run_id ) );
+			STWM_Log::error( $run_id, 'Batch aborted — the uploaded CSV or its index is missing.' );
 			STWM_Run::update( $run_id, array( 'status' => 'failed' ) );
 			return;
 		}
@@ -72,7 +72,7 @@ class STWM_Product_Importer {
 
 		if ( ! $slice ) {
 			STWM_Run::update( $run_id, array( 'status' => 'done' ) );
-			STWM_Logger::info( sprintf( 'Run %s complete: %d product groups.', $run_id, $total ) );
+			STWM_Log::info( $run_id, sprintf( 'Migration complete: %d product groups processed.', $total ) );
 			return;
 		}
 
@@ -86,7 +86,7 @@ class STWM_Product_Importer {
 		$fh = fopen( $csv_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $fh ) {
 			wp_defer_term_counting( false );
-			STWM_Logger::error( sprintf( 'Run %s: cannot open CSV.', $run_id ) );
+			STWM_Log::error( $run_id, 'Batch aborted — the uploaded CSV could not be opened.' );
 			STWM_Run::update( $run_id, array( 'status' => 'failed' ) );
 			return;
 		}
@@ -114,7 +114,7 @@ class STWM_Product_Importer {
 			try {
 				$importer->import_group( (string) $handle, $rows );
 			} catch ( \Throwable $e ) {
-				STWM_Logger::error( sprintf( 'Product "%s" failed: %s', $handle, $e->getMessage() ) );
+				STWM_Log::error( $run_id, sprintf( 'Product "%s" failed: %s', $handle, $e->getMessage() ), 'product', (string) $handle );
 				STWM_Migration_Map::set(
 					array(
 						'run_id'      => $run_id,
@@ -148,7 +148,7 @@ class STWM_Product_Importer {
 			);
 		} else {
 			STWM_Run::update( $run_id, array( 'status' => 'done' ) );
-			STWM_Logger::info( sprintf( 'Run %s complete: %d product groups processed.', $run_id, $total ) );
+			STWM_Log::info( $run_id, sprintf( 'Migration complete: %d product groups processed.', $total ) );
 		}
 	}
 
@@ -271,6 +271,22 @@ class STWM_Product_Importer {
 			throw new \RuntimeException( 'WooCommerce save() returned 0' );
 		}
 
+		// Record the mapping the moment the product exists, before images and
+		// variations. If the batch dies partway (server kill, timeout), the
+		// rollback still has a row to clean up and the next run updates in place
+		// instead of orphaning a post.
+		STWM_Migration_Map::set(
+			array(
+				'run_id'      => $this->run_id,
+				'entity_type' => 'product',
+				'source_id'   => $handle,
+				'source_ref'  => mb_substr( $title, 0, 191 ),
+				'target_id'   => $product_id,
+				'status'      => 'ok',
+				'message'     => 'created',
+			)
+		);
+
 		// Brand taxonomy, if one is registered (WooCommerce core brands or a plugin).
 		if ( '' !== $vendor && taxonomy_exists( 'product_brand' ) ) {
 			$term = term_exists( $vendor, 'product_brand' );
@@ -303,6 +319,7 @@ class STWM_Product_Importer {
 			$this->build_variable( $product, $product_id, $handle, $first, $variant_rows );
 		}
 
+		// Final update of the same mapping row now the product is fully built.
 		STWM_Migration_Map::set(
 			array(
 				'run_id'      => $this->run_id,
@@ -313,6 +330,12 @@ class STWM_Product_Importer {
 				'status'      => 'ok',
 				'message'     => $is_variable ? sprintf( 'variable, %d variations', count( $variant_rows ) ) : 'simple',
 			)
+		);
+		STWM_Log::info(
+			$this->run_id,
+			sprintf( '%s "%s" imported (#%d).', $is_variable ? 'Variable product' : 'Product', $title !== '' ? $title : $handle, $product_id ),
+			'product',
+			$handle
 		);
 	}
 
@@ -445,7 +468,7 @@ class STWM_Product_Importer {
 			try {
 				$obj->set_sku( $sku );
 			} catch ( WC_Data_Exception $e ) {
-				STWM_Logger::warning( sprintf( 'SKU "%s" already in use — left blank on "%s".', $sku, $obj->get_name() ) );
+				STWM_Log::warning( $this->run_id, sprintf( 'SKU "%s" already in use — left blank on "%s".', $sku, $obj->get_name() ), 'variation', $sku );
 			}
 		}
 
@@ -517,7 +540,7 @@ class STWM_Product_Importer {
 
 		$id = media_sideload_image( $url, $post_id, null, 'id' );
 		if ( is_wp_error( $id ) ) {
-			STWM_Logger::warning( sprintf( 'Image failed (%s): %s', $url, $id->get_error_message() ) );
+			STWM_Log::warning( $this->run_id, sprintf( 'Image failed (%s): %s', $url, $id->get_error_message() ), 'image', $url );
 			return 0;
 		}
 

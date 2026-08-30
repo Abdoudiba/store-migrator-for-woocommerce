@@ -64,9 +64,10 @@ class STWM_Install {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset_collate = $wpdb->get_charset_collate();
-		$table           = $wpdb->prefix . 'stwm_map';
+		$map             = $wpdb->prefix . 'stwm_map';
+		$log             = $wpdb->prefix . 'stwm_log';
 
-		$sql = "CREATE TABLE $table (
+		$sql_map = "CREATE TABLE $map (
 			id bigint(20) unsigned NOT NULL auto_increment,
 			run_id varchar(32) NOT NULL default '',
 			entity_type varchar(20) NOT NULL default '',
@@ -83,6 +84,20 @@ class STWM_Install {
 			KEY entity_target (entity_type,target_id)
 		) $charset_collate;";
 
-		dbDelta( $sql );
+		$sql_log = "CREATE TABLE $log (
+			id bigint(20) unsigned NOT NULL auto_increment,
+			run_id varchar(32) NOT NULL default '',
+			level varchar(10) NOT NULL default 'info',
+			entity_type varchar(20) NOT NULL default '',
+			source_id varchar(191) NOT NULL default '',
+			message text NOT NULL,
+			created_at datetime NOT NULL default '0000-00-00 00:00:00',
+			PRIMARY KEY  (id),
+			KEY run_level (run_id,level),
+			KEY run_id (run_id)
+		) $charset_collate;";
+
+		dbDelta( $sql_map );
+		dbDelta( $sql_log );
 	}
 }

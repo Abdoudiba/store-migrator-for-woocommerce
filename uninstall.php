@@ -10,8 +10,10 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 global $wpdb;
 
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-off teardown of a custom table.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery -- one-off teardown of custom tables.
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stwm_map" );
+$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stwm_log" );
+// phpcs:enable WordPress.DB.DirectDatabaseQuery
 
 delete_option( 'stwm_db_version' );
 delete_option( 'stwm_runs' );
