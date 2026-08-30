@@ -1,7 +1,7 @@
 <?php
 /**
- * Remove everything the plugin stored: the ID-map table, its options, and the
- * per-run upload directory. Runs only on "Delete" from the Plugins screen.
+ * Remove everything the plugin stored: the two custom tables, its options, and
+ * the per-run upload directory. Runs only on "Delete" from the Plugins screen.
  *
  * @package Shopify_To_WooCommerce_Migrator
  */
@@ -10,29 +10,31 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 global $wpdb;
 
-// phpcs:disable WordPress.DB.DirectDatabaseQuery -- one-off teardown of custom tables.
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stwm_map" );
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stwm_log" );
-// phpcs:enable WordPress.DB.DirectDatabaseQuery
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off teardown of the plugin's own custom tables.
+$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'stwm_map' ) );
+$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'stwm_log' ) );
+// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 delete_option( 'stwm_db_version' );
 delete_option( 'stwm_runs' );
 delete_option( 'stwm_current_run' );
+delete_option( 'stwm_test_csv' );
+delete_option( 'stwm_test_last_run' );
 
-// Uploaded CSVs and index files.
-$upload = wp_upload_dir();
-$dir    = trailingslashit( $upload['basedir'] ) . 'stwm';
-if ( is_dir( $dir ) ) {
-	$iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS ),
+// Uploaded CSVs and per-run index files under uploads/stwm/.
+$stwm_uploads = wp_upload_dir();
+$stwm_dir     = trailingslashit( $stwm_uploads['basedir'] ) . 'stwm';
+if ( is_dir( $stwm_dir ) ) {
+	$stwm_items = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $stwm_dir, FilesystemIterator::SKIP_DOTS ),
 		RecursiveIteratorIterator::CHILD_FIRST
 	);
-	foreach ( $iterator as $file ) {
-		if ( $file->isDir() ) {
-			rmdir( $file->getPathname() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+	foreach ( $stwm_items as $stwm_item ) {
+		if ( $stwm_item->isDir() ) {
+			rmdir( $stwm_item->getPathname() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- plugin-created dir under uploads/.
 		} else {
-			unlink( $file->getPathname() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_unlink
+			wp_delete_file( $stwm_item->getPathname() );
 		}
 	}
-	rmdir( $dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+	rmdir( $stwm_dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- plugin-created dir under uploads/.
 }

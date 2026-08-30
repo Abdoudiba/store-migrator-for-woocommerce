@@ -24,7 +24,7 @@ class STWM_Run {
 		$run_id = substr( md5( uniqid( 'stwm', true ) ), 0, 32 );
 		$now    = current_time( 'mysql', true );
 
-		$run = wp_parse_args(
+		$run       = wp_parse_args(
 			$args,
 			array(
 				'id'         => $run_id,

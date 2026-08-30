@@ -39,7 +39,8 @@ class STWM_Migration_Map {
 		global $wpdb;
 		$val = $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT target_id FROM ' . self::table() . ' WHERE entity_type = %s AND source_id = %s',
+				'SELECT target_id FROM %i WHERE entity_type = %s AND source_id = %s',
+				self::table(),
 				$entity_type,
 				(string) $source_id
 			)
@@ -56,7 +57,8 @@ class STWM_Migration_Map {
 		global $wpdb;
 		$val = $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT source_id FROM ' . self::table() . ' WHERE entity_type = %s AND target_id = %d',
+				'SELECT source_id FROM %i WHERE entity_type = %s AND target_id = %d',
+				self::table(),
 				$entity_type,
 				(int) $target_id
 			)
@@ -101,7 +103,8 @@ class STWM_Migration_Map {
 		$now    = current_time( 'mysql', true );
 		$row_id = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT id FROM ' . self::table() . ' WHERE entity_type = %s AND source_id = %s',
+				'SELECT id FROM %i WHERE entity_type = %s AND source_id = %s',
+				self::table(),
 				$data['entity_type'],
 				(string) $data['source_id']
 			)
@@ -155,7 +158,11 @@ class STWM_Migration_Map {
 			$where[]  = 'status = %s';
 			$params[] = $status;
 		}
-		$sql = 'SELECT COUNT(*) FROM ' . self::table() . ' WHERE ' . implode( ' AND ', $where );
+		// $where is assembled only from the literal fragments above; every value
+		// is bound through $wpdb->prepare().
+		$sql = 'SELECT COUNT(*) FROM %i WHERE ' . implode( ' AND ', $where );
+		array_unshift( $params, self::table() );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- see comment above; fragments are fixed, values are placeholders.
 		return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
 	}
 
@@ -169,7 +176,8 @@ class STWM_Migration_Map {
 		if ( '' !== $entity_type ) {
 			return $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT * FROM ' . self::table() . ' WHERE run_id = %s AND entity_type = %s ORDER BY id DESC',
+					'SELECT * FROM %i WHERE run_id = %s AND entity_type = %s ORDER BY id DESC',
+					self::table(),
 					$run_id,
 					$entity_type
 				)
@@ -177,7 +185,8 @@ class STWM_Migration_Map {
 		}
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . self::table() . ' WHERE run_id = %s ORDER BY id DESC',
+				'SELECT * FROM %i WHERE run_id = %s ORDER BY id DESC',
+				self::table(),
 				$run_id
 			)
 		);

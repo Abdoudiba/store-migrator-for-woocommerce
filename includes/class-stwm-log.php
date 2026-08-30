@@ -70,11 +70,11 @@ class STWM_Log {
 		global $wpdb;
 		if ( '' !== $level ) {
 			return (int) $wpdb->get_var(
-				$wpdb->prepare( 'SELECT COUNT(*) FROM ' . self::table() . ' WHERE run_id = %s AND level = %s', $run_id, $level )
+				$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE run_id = %s AND level = %s', self::table(), $run_id, $level )
 			);
 		}
 		return (int) $wpdb->get_var(
-			$wpdb->prepare( 'SELECT COUNT(*) FROM ' . self::table() . ' WHERE run_id = %s', $run_id )
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE run_id = %s', self::table(), $run_id )
 		);
 	}
 
@@ -89,7 +89,8 @@ class STWM_Log {
 		if ( '' !== $level ) {
 			return $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT * FROM ' . self::table() . ' WHERE run_id = %s AND level = %s ORDER BY id DESC LIMIT %d',
+					'SELECT * FROM %i WHERE run_id = %s AND level = %s ORDER BY id DESC LIMIT %d',
+					self::table(),
 					$run_id,
 					$level,
 					$limit
@@ -98,7 +99,8 @@ class STWM_Log {
 		}
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . self::table() . ' WHERE run_id = %s ORDER BY id DESC LIMIT %d',
+				'SELECT * FROM %i WHERE run_id = %s ORDER BY id DESC LIMIT %d',
+				self::table(),
 				$run_id,
 				$limit
 			)
@@ -114,7 +116,8 @@ class STWM_Log {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT created_at, level, entity_type, source_id, message FROM ' . self::table() . ' WHERE run_id = %s ORDER BY id ASC',
+				'SELECT created_at, level, entity_type, source_id, message FROM %i WHERE run_id = %s ORDER BY id ASC',
+				self::table(),
 				$run_id
 			)
 		);

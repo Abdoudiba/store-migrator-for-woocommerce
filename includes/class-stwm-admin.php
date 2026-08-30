@@ -49,7 +49,14 @@ class STWM_Admin {
 	/* --- Notices (survive the post/redirect/get cycle) ------------------- */
 
 	private static function set_notice( $message, $type = 'success' ) {
-		set_transient( 'stwm_notice_' . get_current_user_id(), array( 'msg' => $message, 'type' => $type ), MINUTE_IN_SECONDS );
+		set_transient(
+			'stwm_notice_' . get_current_user_id(),
+			array(
+				'msg'  => $message,
+				'type' => $type,
+			),
+			MINUTE_IN_SECONDS
+		);
 	}
 
 	private static function print_notice() {
@@ -227,7 +234,11 @@ class STWM_Admin {
 	 */
 	private static function render_preflight( array $run ) {
 		$problems = isset( $run['problems'] ) && is_array( $run['problems'] ) ? $run['problems'] : array();
-		$counts   = isset( $run['problem_counts'] ) ? $run['problem_counts'] : array( 'error' => 0, 'warning' => 0, 'info' => 0 );
+		$counts   = isset( $run['problem_counts'] ) ? $run['problem_counts'] : array(
+			'error'   => 0,
+			'warning' => 0,
+			'info'    => 0,
+		);
 		$total    = isset( $run['problem_total'] ) ? (int) $run['problem_total'] : count( $problems );
 
 		if ( ! $problems ) {
@@ -236,9 +247,30 @@ class STWM_Admin {
 			return false;
 		}
 
-		$errors   = array_values( array_filter( $problems, static function ( $p ) { return 'error' === $p['level']; } ) );
-		$warnings = array_values( array_filter( $problems, static function ( $p ) { return 'warning' === $p['level']; } ) );
-		$infos    = array_values( array_filter( $problems, static function ( $p ) { return 'info' === $p['level']; } ) );
+		$errors   = array_values(
+			array_filter(
+				$problems,
+				static function ( $p ) {
+					return 'error' === $p['level'];
+				}
+			)
+		);
+		$warnings = array_values(
+			array_filter(
+				$problems,
+				static function ( $p ) {
+					return 'warning' === $p['level'];
+				}
+			)
+		);
+		$infos    = array_values(
+			array_filter(
+				$problems,
+				static function ( $p ) {
+					return 'info' === $p['level'];
+				}
+			)
+		);
 
 		echo '<h3>' . esc_html__( 'Pre-flight checks', 'shopify-to-woocommerce-migrator' ) . '</h3>';
 
@@ -268,12 +300,14 @@ class STWM_Admin {
 		if ( $total > count( $problems ) ) {
 			printf(
 				'<p class="description">%s</p>',
-				esc_html( sprintf(
+				esc_html(
+					sprintf(
 					/* translators: 1: shown count, 2: total count */
-					__( 'Showing %1$s of %2$s findings.', 'shopify-to-woocommerce-migrator' ),
-					number_format_i18n( count( $problems ) ),
-					number_format_i18n( $total )
-				) )
+						__( 'Showing %1$s of %2$s findings.', 'shopify-to-woocommerce-migrator' ),
+						number_format_i18n( count( $problems ) ),
+						number_format_i18n( $total )
+					)
+				)
 			);
 		}
 
@@ -305,11 +339,13 @@ class STWM_Admin {
 		echo '<h2>' . esc_html__( 'Start the migration', 'shopify-to-woocommerce-migrator' ) . '</h2>';
 		printf(
 			'<p>%s</p>',
-			esc_html( sprintf(
+			esc_html(
+				sprintf(
 				/* translators: %s: product count */
-				__( 'About to create up to %s products in WooCommerce. Batches run in the background — you can leave this page. The next screen has a rollback that removes everything this run creates.', 'shopify-to-woocommerce-migrator' ),
-				number_format_i18n( $total )
-			) )
+					__( 'About to create up to %s products in WooCommerce. Batches run in the background — you can leave this page. The next screen has a rollback that removes everything this run creates.', 'shopify-to-woocommerce-migrator' ),
+					number_format_i18n( $total )
+				)
+			)
 		);
 		self::form_close( __( 'Start migration', 'shopify-to-woocommerce-migrator' ) );
 	}
@@ -325,25 +361,27 @@ class STWM_Admin {
 			return;
 		}
 
-		$total       = isset( $run['stats']['product']['total'] ) ? (int) $run['stats']['product']['total'] : 0;
-		$done        = STWM_Migration_Map::count( $run_id, 'product', 'ok' );
-		$errors      = STWM_Migration_Map::count( $run_id, 'product', 'error' );
-		$variations  = STWM_Migration_Map::count( $run_id, 'variation' );
-		$images      = STWM_Migration_Map::count( $run_id, 'image' );
-		$status      = $run['status'];
+		$total      = isset( $run['stats']['product']['total'] ) ? (int) $run['stats']['product']['total'] : 0;
+		$done       = STWM_Migration_Map::count( $run_id, 'product', 'ok' );
+		$errors     = STWM_Migration_Map::count( $run_id, 'product', 'error' );
+		$variations = STWM_Migration_Map::count( $run_id, 'variation' );
+		$images     = STWM_Migration_Map::count( $run_id, 'image' );
+		$status     = $run['status'];
 
 		printf( '<p><strong>%s</strong> — <code>%s</code></p>', esc_html( ucfirst( str_replace( '_', ' ', $status ) ) ), esc_html( $run_id ) );
 		printf(
 			'<p>%s</p>',
-			esc_html( sprintf(
+			esc_html(
+				sprintf(
 				/* translators: 1: done, 2: total, 3: failed, 4: variations, 5: images */
-				__( 'Products: %1$s / %2$s created, %3$s failed. Variations: %4$s. Images: %5$s.', 'shopify-to-woocommerce-migrator' ),
-				number_format_i18n( $done ),
-				number_format_i18n( $total ),
-				number_format_i18n( $errors ),
-				number_format_i18n( $variations ),
-				number_format_i18n( $images )
-			) )
+					__( 'Products: %1$s / %2$s created, %3$s failed. Variations: %4$s. Images: %5$s.', 'shopify-to-woocommerce-migrator' ),
+					number_format_i18n( $done ),
+					number_format_i18n( $total ),
+					number_format_i18n( $errors ),
+					number_format_i18n( $variations ),
+					number_format_i18n( $images )
+				)
+			)
 		);
 
 		if ( 'running' === $status ) {
@@ -375,11 +413,13 @@ class STWM_Admin {
 			if ( count( $rows ) > 100 ) {
 				printf(
 					'<p class="description">%s</p>',
-					esc_html( sprintf(
+					esc_html(
+						sprintf(
 						/* translators: %s: total row count */
-						__( 'Showing the latest 100 of %s products.', 'shopify-to-woocommerce-migrator' ),
-						number_format_i18n( count( $rows ) )
-					) )
+							__( 'Showing the latest 100 of %s products.', 'shopify-to-woocommerce-migrator' ),
+							number_format_i18n( count( $rows ) )
+						)
+					)
 				);
 			}
 		}
@@ -430,13 +470,15 @@ class STWM_Admin {
 		echo '<hr /><h3>' . esc_html__( 'Log', 'shopify-to-woocommerce-migrator' ) . '</h3>';
 		printf(
 			'<p>%s ',
-			esc_html( sprintf(
+			esc_html(
+				sprintf(
 				/* translators: 1: errors, 2: warnings, 3: total */
-				__( '%1$s errors, %2$s warnings, %3$s entries total.', 'shopify-to-woocommerce-migrator' ),
-				number_format_i18n( $n_error ),
-				number_format_i18n( $n_warn ),
-				number_format_i18n( $total )
-			) )
+					__( '%1$s errors, %2$s warnings, %3$s entries total.', 'shopify-to-woocommerce-migrator' ),
+					number_format_i18n( $n_error ),
+					number_format_i18n( $n_warn ),
+					number_format_i18n( $total )
+				)
+			)
 		);
 		printf(
 			'<a class="button" href="%s">%s</a></p>',
@@ -468,12 +510,14 @@ class STWM_Admin {
 		if ( $total > count( $log_rows ) ) {
 			printf(
 				'<p class="description">%s</p>',
-				esc_html( sprintf(
+				esc_html(
+					sprintf(
 					/* translators: 1: shown, 2: total */
-					__( 'Showing the latest %1$s of %2$s entries — the CSV has everything.', 'shopify-to-woocommerce-migrator' ),
-					number_format_i18n( count( $log_rows ) ),
-					number_format_i18n( $total )
-				) )
+						__( 'Showing the latest %1$s of %2$s entries — the CSV has everything.', 'shopify-to-woocommerce-migrator' ),
+						number_format_i18n( count( $log_rows ) ),
+						number_format_i18n( $total )
+					)
+				)
 			);
 		}
 	}
@@ -579,6 +623,11 @@ class STWM_Admin {
 	 * @return bool True on success (advance to Analyze).
 	 */
 	private static function do_connect() {
+		// Re-assert the nonce here so this method is self-contained (it is only
+		// ever reached from handle_post()'s "connect" case, which already
+		// verified it).
+		check_admin_referer( 'stwm_wizard_connect' );
+
 		if ( empty( $_FILES['stwm_csv'] ) || ! isset( $_FILES['stwm_csv']['tmp_name'] ) ) {
 			self::set_notice( __( 'No file received. Please choose a CSV file.', 'shopify-to-woocommerce-migrator' ), 'error' );
 			return false;
@@ -639,7 +688,12 @@ class STWM_Admin {
 			return false;
 		}
 
-		STWM_Queue::enqueue_batch( array( 'run_id' => $run_id, 'entity_type' => 'index' ) );
+		STWM_Queue::enqueue_batch(
+			array(
+				'run_id'      => $run_id,
+				'entity_type' => 'index',
+			)
+		);
 		self::maybe_spawn_cron();
 		return true;
 	}

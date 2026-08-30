@@ -65,7 +65,8 @@ class STWM_Product_Importer {
 			return;
 		}
 
-		$index   = json_decode( (string) file_get_contents( $index_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_get_contents
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a small local JSON file the plugin itself just wrote, not a URL.
+		$index   = json_decode( (string) file_get_contents( $index_path ), true );
 		$handles = ( isset( $index['handles'] ) && is_array( $index['handles'] ) ) ? $index['handles'] : array();
 		$total   = count( $handles );
 		$slice   = array_slice( $handles, $offset, $batch );
@@ -168,7 +169,7 @@ class STWM_Product_Importer {
 		$variant_rows = array();
 		$image_urls   = array();
 		foreach ( $rows as $row ) {
-			$has_opt = '' !== stwm_col( $row, 'Option1 Value' )
+			$has_opt    = '' !== stwm_col( $row, 'Option1 Value' )
 				|| '' !== stwm_col( $row, 'Option2 Value' )
 				|| '' !== stwm_col( $row, 'Option3 Value' );
 			$is_variant = '' !== stwm_col( $row, 'Title' )
@@ -333,7 +334,7 @@ class STWM_Product_Importer {
 		);
 		STWM_Log::info(
 			$this->run_id,
-			sprintf( '%s "%s" imported (#%d).', $is_variable ? 'Variable product' : 'Product', $title !== '' ? $title : $handle, $product_id ),
+			sprintf( '%s "%s" imported (#%d).', $is_variable ? 'Variable product' : 'Product', '' !== $title ? $title : $handle, $product_id ),
 			'product',
 			$handle
 		);

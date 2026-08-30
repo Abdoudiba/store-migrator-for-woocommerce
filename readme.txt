@@ -1,8 +1,8 @@
 === Shopify to WooCommerce Migrator ===
 Contributors: abdoudiba
-Tags: woocommerce, migration, import, shopify, migrate
-Requires at least: 6.0
-Tested up to: 6.7
+Tags: woocommerce, shopify, migration, import, csv importer
+Requires at least: 6.4
+Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 8.0

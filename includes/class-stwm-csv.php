@@ -115,8 +115,8 @@ class STWM_CSV {
 		$status_col = isset( $idx['Status'] ) ? $idx['Status'] : null;
 		$pub_col    = isset( $idx['Published'] ) ? $idx['Published'] : null;
 
-		$problems   = array();
-		$prob_count = 0;
+		$problems    = array();
+		$prob_count  = 0;
 		$add_problem = static function ( $level, $code, $message ) use ( &$problems, &$prob_count ) {
 			++$prob_count;
 			if ( count( $problems ) < self::MAX_PROBLEMS ) {
@@ -138,18 +138,18 @@ class STWM_CSV {
 			$add_problem( 'info', 'no_status_column', 'The CSV has neither a "Status" nor a "Published" column — every product will be published.' );
 		}
 
-		$handles       = array();
-		$current       = null;
-		$current_pos   = 0;
-		$current_rows  = 0;
-		$n_products    = 0;
-		$n_variants    = 0;
-		$n_images      = 0;
-		$line          = 1; // header is line 1
-		$first_of_grp  = false;
-		$skus_seen     = array();
-		$image_urls    = array();
-		$image_capped  = false;
+		$handles      = array();
+		$current      = null;
+		$current_pos  = 0;
+		$current_rows = 0;
+		$n_products   = 0;
+		$n_variants   = 0;
+		$n_images     = 0;
+		$line         = 1; // header is line 1
+		$first_of_grp = false;
+		$skus_seen    = array();
+		$image_urls   = array();
+		$image_capped = false;
 
 		$collect_url = static function ( $url ) use ( &$image_urls, &$image_capped ) {
 			$url = trim( (string) $url );
@@ -234,10 +234,10 @@ class STWM_CSV {
 		file_put_contents( $dir['path'] . '/products.index.json', wp_json_encode( array( 'handles' => $handles ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 
 		// Dry-run reachability check on a bounded sample of the image URLs.
-		$all_urls     = array_keys( $image_urls );
-		$check_urls   = array_slice( $all_urls, 0, self::IMAGE_CHECK_LIMIT );
-		$checked      = 0;
-		$unreachable  = 0;
+		$all_urls    = array_keys( $image_urls );
+		$check_urls  = array_slice( $all_urls, 0, self::IMAGE_CHECK_LIMIT );
+		$checked     = 0;
+		$unreachable = 0;
 		foreach ( $check_urls as $url ) {
 			++$checked;
 			if ( ! preg_match( '#^https?://#i', $url ) ) {
@@ -245,7 +245,13 @@ class STWM_CSV {
 				$add_problem( 'warning', 'image_bad_url', sprintf( 'Image URL is not http(s): %s', $url ) );
 				continue;
 			}
-			$resp = wp_remote_head( $url, array( 'timeout' => 5, 'redirection' => 3 ) );
+			$resp = wp_remote_head(
+				$url,
+				array(
+					'timeout'     => 5,
+					'redirection' => 3,
+				)
+			);
 			$code = is_wp_error( $resp ) ? 0 : (int) wp_remote_retrieve_response_code( $resp );
 			if ( $code < 200 || $code >= 400 ) {
 				++$unreachable;

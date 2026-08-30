@@ -120,8 +120,8 @@ function stwm_rrmdir( $dir ) {
 		if ( is_dir( $child ) ) {
 			stwm_rrmdir( $child );
 		} else {
-			unlink( $child ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_unlink
+			wp_delete_file( $child );
 		}
 	}
-	rmdir( $dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+	rmdir( $dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- empty per-run dir the plugin created under uploads/.
 }

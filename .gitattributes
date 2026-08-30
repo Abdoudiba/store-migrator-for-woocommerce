@@ -1,0 +1,9 @@
+# Keep development-only files out of `git archive` exports / release zips.
+/.git*              export-ignore
+/.editorconfig      export-ignore
+/.phpcs.xml.dist    export-ignore
+/composer.json      export-ignore
+/composer.lock      export-ignore
+/README.md          export-ignore
+/tests             export-ignore
+/vendor            export-ignore

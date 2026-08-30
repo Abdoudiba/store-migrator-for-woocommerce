@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/Abdoudiba/shopify-to-woocommerce-migrator
  * Description:        Migrate a Shopify store into WooCommerce — products, variants and images (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable.
  * Version:           0.3.0-dev
- * Requires at least: 6.0
+ * Requires at least: 6.4
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
  * WC requires at least: 8.0
