@@ -529,6 +529,18 @@ class STWM_Product_Importer {
 		$key      = 'img:' . sha1( $url );
 		$existing = STWM_Migration_Map::get_target( 'image', $key );
 		if ( $existing && wp_get_attachment_url( $existing ) ) {
+			// Reuse the attachment, but re-stamp the mapping row with this run so
+			// the run's image count and rollback set stay accurate across re-imports.
+			STWM_Migration_Map::set(
+				array(
+					'run_id'      => $this->run_id,
+					'entity_type' => 'image',
+					'source_id'   => $key,
+					'source_ref'  => mb_substr( $url, 0, 191 ),
+					'target_id'   => (int) $existing,
+					'status'      => 'ok',
+				)
+			);
 			return (int) $existing;
 		}
 
