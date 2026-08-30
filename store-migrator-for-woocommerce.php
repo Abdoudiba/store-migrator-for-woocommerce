@@ -3,7 +3,7 @@
  * Plugin Name:       Store Migrator for WooCommerce
  * Plugin URI:        https://github.com/Abdoudiba/store-migrator-for-woocommerce
  * Description:        Migrate a Shopify store into WooCommerce — products, variants and images from a CSV export (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable.
- * Version:           0.3.0-dev
+ * Version:           0.3.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STWM_VERSION', '0.3.0-dev' );
+define( 'STWM_VERSION', '0.3.0' );
 define( 'STWM_PLUGIN_FILE', __FILE__ );
 define( 'STWM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'STWM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

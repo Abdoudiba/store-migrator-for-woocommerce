@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.0
-Stable tag: 0.3.0-dev
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,7 +79,7 @@ second run updates the existing product.
 
 == Changelog ==
 
-= 0.3.0-dev =
+= 0.3.0 =
 * Pre-flight checks on the Analyze step: a dry run over the CSV flags duplicate
   SKUs, unparseable prices, rows with no title, missing columns and unreachable
   image URLs before anything is written. Blocking issues stop the import until
