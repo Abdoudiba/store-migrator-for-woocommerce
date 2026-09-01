@@ -95,7 +95,7 @@ orders only through the `WC_Order` CRUD API.
 1. **Scaffold** — bootstrap, queue, ID map, wizard shell. ✅
 2. **CSV product import** (free core): Shopify Products CSV → simple/variable products, variants, images, tags, type→category; batched, resumable, with rollback and a live report. ✅
 3. Dry-run pre-flight (dup SKUs, unreachable images, malformed rows), own per-run log table + CSV export, crash-safe map writes. ✅
-4. **WordPress.org submission prep**: WPCS pass (clean), `.pot`, readme polish, Plugin Check (clean), rename to `store-migrator-for-woocommerce`. ✅ — remaining: icon/banner/screenshots, version `0.3.0`.
+4. **WordPress.org submission prep**: WPCS pass (clean), `.pot`, readme polish, Plugin Check (clean), rename to `store-migrator-for-woocommerce`. ✅ — remaining: icon/banner/screenshots, version `1.0.0`.
 5. Premium add-on skeleton + license check (reuse the ysqd approach — no Freemius cut).
 6. Shopify Admin API client (REST first, respect the 2 req/s bucket) → products + collections.
 7. Customers + orders via API (status mapping: paid+fulfilled → completed, paid+unfulfilled → processing, …).

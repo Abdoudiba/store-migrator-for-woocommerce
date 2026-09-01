@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.0
-Stable tag: 0.3.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,28 +79,26 @@ second run updates the existing product.
 
 == Changelog ==
 
-= 0.3.0 =
+= 1.0.0 =
+First public release.
+
+* Import Shopify products from the standard Products CSV: simple and variable
+  products, variants (price, sale price from Compare At, SKU, stock, backorders,
+  weight, barcode, tax, virtual), product type as category, tags, vendor and SEO
+  fields. Product and variant images are sideloaded into the media library and
+  de-duplicated.
+* Background processing through Action Scheduler (the queue WooCommerce itself
+  uses): an index pass over the uploaded CSV, then batched import with a live
+  progress report, resumable if interrupted.
+* Idempotent: matching is by Shopify source ID (SKU as a fallback), so a second
+  run updates products in place instead of duplicating them.
+* One-click rollback: deletes every product, variation and image a run created.
 * Pre-flight checks on the Analyze step: a dry run over the CSV flags duplicate
   SKUs, unparseable prices, rows with no title, missing columns and unreachable
   image URLs before anything is written. Blocking issues stop the import until
   the file is corrected; warnings are shown but let the run proceed.
-* The plugin now keeps its own per-run log (independent of WooCommerce's logger,
-  which many stores have switched off), shown on the report screen and
-  downloadable as CSV.
+* Independent per-run log (WooCommerce's logger is off on many stores), shown on
+  the report screen and downloadable as CSV.
 * Crash-safety: a product's mapping row is written the moment the product is
   created, before its images and variations, so a batch that dies partway can
-  still be rolled back cleanly and the next run updates in place.
-
-= 0.2.0-dev =
-* Product import from the Shopify Products CSV: simple and variable products,
-  variants (price, sale price from Compare At, SKU, stock, backorders, weight,
-  barcode, tax, virtual), product type as category, tags, vendor, SEO fields,
-  and product + variant images sideloaded into the media library.
-* Background index pass over the uploaded CSV, then batched import through
-  Action Scheduler with a live progress report.
-* One-click rollback: deletes every product, variation and image a run created.
-* Re-running an import updates products in place instead of duplicating them.
-
-= 0.1.0-dev =
-* Scaffold: plugin bootstrap, Action Scheduler batch pipeline, ID-map table,
-  migration-run registry, and the navigable import wizard shell.
+  still be rolled back cleanly.
