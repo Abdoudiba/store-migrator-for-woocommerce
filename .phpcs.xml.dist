@@ -22,7 +22,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="yuupee-store-migrator-shopify-woocommerce"/>
+				<element value="yuupee-store-migrator-for-shopify"/>
 			</property>
 		</properties>
 	</rule>

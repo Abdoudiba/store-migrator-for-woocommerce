@@ -1,4 +1,4 @@
-=== Yuupee Store Migrator for Shopify and WooCommerce ===
+=== Yuupee Store Migrator for Shopify ===
 Contributors: abdoudiba
 Tags: shopify, woocommerce, migration, import, csv importer
 Requires at least: 6.4
@@ -15,7 +15,7 @@ Migrate a Shopify store into WooCommerce — products, variants and images from 
 
 == Description ==
 
-Yuupee Store Migrator for Shopify and WooCommerce brings a Shopify catalogue into WooCommerce
+Yuupee Store Migrator for Shopify brings a Shopify catalogue into WooCommerce
 without a hosted middleman. You export the standard CSV files from your Shopify
 admin, upload them here, and the plugin creates the matching WooCommerce
 products.
@@ -80,7 +80,7 @@ second run updates the existing product.
 == Changelog ==
 
 = 1.0.1 =
-* Renamed to "Yuupee Store Migrator for Shopify and WooCommerce" (slug: yuupee-store-migrator-shopify-woocommerce) per WordPress.org naming guidelines.
+* Renamed to "Yuupee Store Migrator for Shopify" (slug: yuupee-store-migrator-for-shopify) per WordPress.org naming guidelines.
 * Hardened the image-reachability pre-flight check: it now uses `wp_safe_remote_head()` so a CSV-supplied image URL can't be used to probe internal/private network addresses.
 
 = 1.0.0 =
