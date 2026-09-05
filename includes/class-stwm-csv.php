@@ -245,7 +245,7 @@ class STWM_CSV {
 				$add_problem( 'warning', 'image_bad_url', sprintf( 'Image URL is not http(s): %s', $url ) );
 				continue;
 			}
-			$resp = wp_remote_head(
+			$resp = wp_safe_remote_head(
 				$url,
 				array(
 					'timeout'     => 5,

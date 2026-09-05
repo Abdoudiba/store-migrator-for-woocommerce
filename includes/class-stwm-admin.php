@@ -72,10 +72,10 @@ class STWM_Admin {
 	 */
 	private static function steps() {
 		return array(
-			'connect' => __( 'Connect', 'store-migrator-for-woocommerce' ),
-			'analyze' => __( 'Analyze', 'store-migrator-for-woocommerce' ),
-			'run'     => __( 'Migrate', 'store-migrator-for-woocommerce' ),
-			'report'  => __( 'Report', 'store-migrator-for-woocommerce' ),
+			'connect' => __( 'Connect', 'yuupee-store-migrator-shopify-woocommerce' ),
+			'analyze' => __( 'Analyze', 'yuupee-store-migrator-shopify-woocommerce' ),
+			'run'     => __( 'Migrate', 'yuupee-store-migrator-shopify-woocommerce' ),
+			'report'  => __( 'Report', 'yuupee-store-migrator-shopify-woocommerce' ),
 		);
 	}
 
@@ -89,8 +89,8 @@ class STWM_Admin {
 	public static function menu() {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Shopify Import', 'store-migrator-for-woocommerce' ),
-			__( 'Shopify Import', 'store-migrator-for-woocommerce' ),
+			__( 'Shopify Import', 'yuupee-store-migrator-shopify-woocommerce' ),
+			__( 'Shopify Import', 'yuupee-store-migrator-shopify-woocommerce' ),
 			self::CAP,
 			self::PAGE,
 			array( __CLASS__, 'render' )
@@ -134,13 +134,13 @@ class STWM_Admin {
 
 	public static function render() {
 		if ( ! current_user_can( self::CAP ) ) {
-			wp_die( esc_html__( 'You do not have permission to run migrations.', 'store-migrator-for-woocommerce' ) );
+			wp_die( esc_html__( 'You do not have permission to run migrations.', 'yuupee-store-migrator-shopify-woocommerce' ) );
 		}
 
 		$step = self::current_step();
 
 		echo '<div class="wrap stwm-wizard">';
-		echo '<h1>' . esc_html__( 'Shopify → WooCommerce Migration', 'store-migrator-for-woocommerce' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Shopify → WooCommerce Migration', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h1>';
 		self::print_notice();
 		self::render_steps_nav( $step );
 
@@ -184,17 +184,17 @@ class STWM_Admin {
 
 	private static function step_connect() {
 		self::form_open( 'connect', true );
-		echo '<h2>' . esc_html__( 'Upload your Shopify products CSV', 'store-migrator-for-woocommerce' ) . '</h2>';
-		echo '<p>' . esc_html__( 'In your Shopify admin: Products → Export → "All products", format "Plain CSV file". Upload that file here.', 'store-migrator-for-woocommerce' ) . '</p>';
+		echo '<h2>' . esc_html__( 'Upload your Shopify products CSV', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h2>';
+		echo '<p>' . esc_html__( 'In your Shopify admin: Products → Export → "All products", format "Plain CSV file". Upload that file here.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 		echo '<p><input type="file" name="stwm_csv" accept=".csv,text/csv,text/plain" required /></p>';
 		echo '<p class="description">' . esc_html(
 			sprintf(
 				/* translators: %s: server upload size limit, e.g. "8 MB". */
-				__( 'Server upload limit: %s. Very large catalogues can be split into several exports. The file is analysed in the background after upload.', 'store-migrator-for-woocommerce' ),
+				__( 'Server upload limit: %s. Very large catalogues can be split into several exports. The file is analysed in the background after upload.', 'yuupee-store-migrator-shopify-woocommerce' ),
 				size_format( wp_max_upload_size() )
 			)
 		) . '</p>';
-		self::form_close( __( 'Upload & analyze', 'store-migrator-for-woocommerce' ) );
+		self::form_close( __( 'Upload & analyze', 'yuupee-store-migrator-shopify-woocommerce' ) );
 	}
 
 	private static function step_analyze() {
@@ -202,29 +202,29 @@ class STWM_Admin {
 		$run    = $run_id ? STWM_Run::get( $run_id ) : null;
 
 		if ( ! $run ) {
-			echo '<p>' . esc_html__( 'No migration in progress.', 'store-migrator-for-woocommerce' ) . ' ';
+			echo '<p>' . esc_html__( 'No migration in progress.', 'yuupee-store-migrator-shopify-woocommerce' ) . ' ';
 			printf(
 				'<a href="%s">%s</a></p>',
 				esc_url( admin_url( 'admin.php?page=' . self::PAGE . '&step=connect' ) ),
-				esc_html__( 'Start one', 'store-migrator-for-woocommerce' )
+				esc_html__( 'Start one', 'yuupee-store-migrator-shopify-woocommerce' )
 			);
 			return;
 		}
 
 		if ( 'uploaded' === $run['status'] ) {
-			echo '<h2>' . esc_html__( 'Analysing…', 'store-migrator-for-woocommerce' ) . '</h2>';
-			echo '<p>' . esc_html__( 'Reading the CSV in the background. This page refreshes automatically.', 'store-migrator-for-woocommerce' ) . '</p>';
+			echo '<h2>' . esc_html__( 'Analysing…', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h2>';
+			echo '<p>' . esc_html__( 'Reading the CSV in the background. This page refreshes automatically.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			echo '<meta http-equiv="refresh" content="5" />';
 			return;
 		}
 
 		if ( 'failed' === $run['status'] ) {
-			echo '<h2>' . esc_html__( 'Analysis failed', 'store-migrator-for-woocommerce' ) . '</h2>';
-			echo '<p>' . esc_html__( 'The file could not be read as a Shopify products export. See WooCommerce → Status → Logs (source: stwm) for details.', 'store-migrator-for-woocommerce' ) . '</p>';
+			echo '<h2>' . esc_html__( 'Analysis failed', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h2>';
+			echo '<p>' . esc_html__( 'The file could not be read as a Shopify products export. See WooCommerce → Status → Logs (source: stwm) for details.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			printf(
 				'<p><a class="button" href="%s">%s</a></p>',
 				esc_url( admin_url( 'admin.php?page=' . self::PAGE . '&step=connect' ) ),
-				esc_html__( 'Try another file', 'store-migrator-for-woocommerce' )
+				esc_html__( 'Try another file', 'yuupee-store-migrator-shopify-woocommerce' )
 			);
 			return;
 		}
@@ -235,11 +235,11 @@ class STWM_Admin {
 			'images'   => 0,
 		);
 
-		echo '<h2>' . esc_html__( 'Ready to migrate', 'store-migrator-for-woocommerce' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Ready to migrate', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h2>';
 		echo '<ul style="list-style:disc;margin:0 0 1em 1.5em;">';
-		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s products', 'store-migrator-for-woocommerce' ), number_format_i18n( $stats['total'] ) ) ) );
-		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s variant rows', 'store-migrator-for-woocommerce' ), number_format_i18n( $stats['variants'] ) ) ) );
-		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s image references', 'store-migrator-for-woocommerce' ), number_format_i18n( $stats['images'] ) ) ) );
+		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s products', 'yuupee-store-migrator-shopify-woocommerce' ), number_format_i18n( $stats['total'] ) ) ) );
+		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s variant rows', 'yuupee-store-migrator-shopify-woocommerce' ), number_format_i18n( $stats['variants'] ) ) ) );
+		printf( '<li>%s</li>', esc_html( sprintf( /* translators: %s: count */ __( '%s image references', 'yuupee-store-migrator-shopify-woocommerce' ), number_format_i18n( $stats['images'] ) ) ) );
 		echo '</ul>';
 
 		$has_errors = self::render_preflight( $run );
@@ -247,34 +247,34 @@ class STWM_Admin {
 		$opts = isset( $run['options'] ) ? $run['options'] : array();
 
 		if ( $has_errors ) {
-			echo '<p>' . esc_html__( 'Fix the blocking issues above in your Shopify export, then upload the corrected file.', 'store-migrator-for-woocommerce' ) . '</p>';
+			echo '<p>' . esc_html__( 'Fix the blocking issues above in your Shopify export, then upload the corrected file.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			printf(
 				'<p><a class="button button-primary" href="%s">%s</a></p>',
 				esc_url( admin_url( 'admin.php?page=' . self::PAGE . '&step=connect' ) ),
-				esc_html__( 'Upload a corrected file', 'store-migrator-for-woocommerce' )
+				esc_html__( 'Upload a corrected file', 'yuupee-store-migrator-shopify-woocommerce' )
 			);
 			return;
 		}
 
 		self::form_open( 'analyze' );
-		echo '<h3>' . esc_html__( 'Options', 'store-migrator-for-woocommerce' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Options', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h3>';
 		printf(
 			'<p><label><input type="checkbox" name="stwm_download_images" value="1" %s /> %s</label></p>',
 			checked( ! empty( $opts['download_images'] ), true, false ),
-			esc_html__( 'Download product images into the media library', 'store-migrator-for-woocommerce' )
+			esc_html__( 'Download product images into the media library', 'yuupee-store-migrator-shopify-woocommerce' )
 		);
 		printf(
 			'<p><label><input type="checkbox" name="stwm_force_draft" value="1" %s /> %s</label></p>',
 			checked( ! empty( $opts['force_draft'] ), true, false ),
-			esc_html__( 'Import every product as Draft (review before publishing)', 'store-migrator-for-woocommerce' )
+			esc_html__( 'Import every product as Draft (review before publishing)', 'yuupee-store-migrator-shopify-woocommerce' )
 		);
 		printf(
 			'<p><label>%s <input type="number" name="stwm_batch_size" min="1" max="100" value="%d" style="width:5em;" /></label> <span class="description">%s</span></p>',
-			esc_html__( 'Products per batch', 'store-migrator-for-woocommerce' ),
+			esc_html__( 'Products per batch', 'yuupee-store-migrator-shopify-woocommerce' ),
 			(int) ( ! empty( $opts['batch_size'] ) ? $opts['batch_size'] : 15 ),
-			esc_html__( 'Lower this if image downloads make batches time out.', 'store-migrator-for-woocommerce' )
+			esc_html__( 'Lower this if image downloads make batches time out.', 'yuupee-store-migrator-shopify-woocommerce' )
 		);
-		self::form_close( __( 'Continue', 'store-migrator-for-woocommerce' ) );
+		self::form_close( __( 'Continue', 'yuupee-store-migrator-shopify-woocommerce' ) );
 	}
 
 	/**
@@ -294,7 +294,7 @@ class STWM_Admin {
 
 		if ( ! $problems ) {
 			echo '<p><span class="dashicons dashicons-yes" style="color:#008a20;"></span> ' .
-				esc_html__( 'Pre-flight checks passed — no problems found in the CSV.', 'store-migrator-for-woocommerce' ) . '</p>';
+				esc_html__( 'Pre-flight checks passed — no problems found in the CSV.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			return false;
 		}
 
@@ -323,7 +323,7 @@ class STWM_Admin {
 			)
 		);
 
-		echo '<h3>' . esc_html__( 'Pre-flight checks', 'store-migrator-for-woocommerce' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Pre-flight checks', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h3>';
 
 		$render_list = static function ( $items ) {
 			echo '<ul style="list-style:disc;margin:.3em 0 1em 1.5em;">';
@@ -335,14 +335,14 @@ class STWM_Admin {
 
 		if ( $errors ) {
 			echo '<div class="notice notice-error inline"><p><strong>' .
-				esc_html( sprintf( /* translators: %s: count */ _n( '%s blocking issue', '%s blocking issues', count( $errors ), 'store-migrator-for-woocommerce' ), number_format_i18n( count( $errors ) ) ) ) .
+				esc_html( sprintf( /* translators: %s: count */ _n( '%s blocking issue', '%s blocking issues', count( $errors ), 'yuupee-store-migrator-shopify-woocommerce' ), number_format_i18n( count( $errors ) ) ) ) .
 				'</strong></p></div>';
 			$render_list( $errors );
 		}
 		if ( $warnings ) {
 			echo '<div class="notice notice-warning inline"><p><strong>' .
-				esc_html( sprintf( /* translators: %s: count */ _n( '%s warning', '%s warnings', count( $warnings ), 'store-migrator-for-woocommerce' ), number_format_i18n( count( $warnings ) ) ) ) .
-				'</strong> — ' . esc_html__( 'the import will still run; these rows degrade gracefully.', 'store-migrator-for-woocommerce' ) . '</p></div>';
+				esc_html( sprintf( /* translators: %s: count */ _n( '%s warning', '%s warnings', count( $warnings ), 'yuupee-store-migrator-shopify-woocommerce' ), number_format_i18n( count( $warnings ) ) ) ) .
+				'</strong> — ' . esc_html__( 'the import will still run; these rows degrade gracefully.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p></div>';
 			$render_list( $warnings );
 		}
 		if ( $infos ) {
@@ -354,7 +354,7 @@ class STWM_Admin {
 				esc_html(
 					sprintf(
 					/* translators: 1: shown count, 2: total count */
-						__( 'Showing %1$s of %2$s findings.', 'store-migrator-for-woocommerce' ),
+						__( 'Showing %1$s of %2$s findings.', 'yuupee-store-migrator-shopify-woocommerce' ),
 						number_format_i18n( count( $problems ) ),
 						number_format_i18n( $total )
 					)
@@ -370,16 +370,16 @@ class STWM_Admin {
 		$run    = $run_id ? STWM_Run::get( $run_id ) : null;
 
 		if ( ! $run ) {
-			echo '<p>' . esc_html__( 'No migration in progress.', 'store-migrator-for-woocommerce' ) . '</p>';
+			echo '<p>' . esc_html__( 'No migration in progress.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			return;
 		}
 
 		if ( in_array( $run['status'], array( 'running', 'done' ), true ) ) {
 			printf(
 				'<p>%s <a href="%s">%s</a></p>',
-				esc_html__( 'This migration is already under way.', 'store-migrator-for-woocommerce' ),
+				esc_html__( 'This migration is already under way.', 'yuupee-store-migrator-shopify-woocommerce' ),
 				esc_url( admin_url( 'admin.php?page=' . self::PAGE . '&step=report' ) ),
-				esc_html__( 'View progress', 'store-migrator-for-woocommerce' )
+				esc_html__( 'View progress', 'yuupee-store-migrator-shopify-woocommerce' )
 			);
 			return;
 		}
@@ -387,28 +387,28 @@ class STWM_Admin {
 		$total = isset( $run['stats']['product']['total'] ) ? (int) $run['stats']['product']['total'] : 0;
 
 		self::form_open( 'run' );
-		echo '<h2>' . esc_html__( 'Start the migration', 'store-migrator-for-woocommerce' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Start the migration', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h2>';
 		printf(
 			'<p>%s</p>',
 			esc_html(
 				sprintf(
 				/* translators: %s: product count */
-					__( 'About to create up to %s products in WooCommerce. Batches run in the background — you can leave this page. The next screen has a rollback that removes everything this run creates.', 'store-migrator-for-woocommerce' ),
+					__( 'About to create up to %s products in WooCommerce. Batches run in the background — you can leave this page. The next screen has a rollback that removes everything this run creates.', 'yuupee-store-migrator-shopify-woocommerce' ),
 					number_format_i18n( $total )
 				)
 			)
 		);
-		self::form_close( __( 'Start migration', 'store-migrator-for-woocommerce' ) );
+		self::form_close( __( 'Start migration', 'yuupee-store-migrator-shopify-woocommerce' ) );
 	}
 
 	private static function step_report() {
 		$run_id = STWM_Run::current();
 		$run    = $run_id ? STWM_Run::get( $run_id ) : null;
 
-		echo '<h2>' . esc_html__( 'Migration report', 'store-migrator-for-woocommerce' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Migration report', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h2>';
 
 		if ( ! $run ) {
-			echo '<p>' . esc_html__( 'No migration run yet.', 'store-migrator-for-woocommerce' ) . '</p>';
+			echo '<p>' . esc_html__( 'No migration run yet.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			return;
 		}
 
@@ -425,7 +425,7 @@ class STWM_Admin {
 			esc_html(
 				sprintf(
 				/* translators: 1: done, 2: total, 3: failed, 4: variations, 5: images */
-					__( 'Products: %1$s / %2$s created, %3$s failed. Variations: %4$s. Images: %5$s.', 'store-migrator-for-woocommerce' ),
+					__( 'Products: %1$s / %2$s created, %3$s failed. Variations: %4$s. Images: %5$s.', 'yuupee-store-migrator-shopify-woocommerce' ),
 					number_format_i18n( $done ),
 					number_format_i18n( $total ),
 					number_format_i18n( $errors ),
@@ -436,18 +436,18 @@ class STWM_Admin {
 		);
 
 		if ( 'running' === $status ) {
-			echo '<p><em>' . esc_html__( 'Running in the background — this page refreshes every 10 seconds.', 'store-migrator-for-woocommerce' ) . '</em></p>';
+			echo '<p><em>' . esc_html__( 'Running in the background — this page refreshes every 10 seconds.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</em></p>';
 			echo '<meta http-equiv="refresh" content="10" />';
 		}
 
 		$rows = STWM_Migration_Map::rows_for_run( $run_id, 'product' );
 		if ( $rows ) {
 			echo '<table class="widefat striped" style="margin-top:1em;"><thead><tr>';
-			echo '<th>' . esc_html__( 'Handle', 'store-migrator-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Title', 'store-migrator-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Product', 'store-migrator-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Status', 'store-migrator-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Note', 'store-migrator-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Handle', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Title', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Product', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Status', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Note', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
 			echo '</tr></thead><tbody>';
 			foreach ( array_slice( $rows, 0, 100 ) as $row ) {
 				$edit_link = $row->target_id ? get_edit_post_link( (int) $row->target_id ) : '';
@@ -467,7 +467,7 @@ class STWM_Admin {
 					esc_html(
 						sprintf(
 						/* translators: %s: total row count */
-							__( 'Showing the latest 100 of %s products.', 'store-migrator-for-woocommerce' ),
+							__( 'Showing the latest 100 of %s products.', 'yuupee-store-migrator-shopify-woocommerce' ),
 							number_format_i18n( count( $rows ) )
 						)
 					)
@@ -480,29 +480,29 @@ class STWM_Admin {
 		printf(
 			'<p style="margin-top:1em;"><a class="button" href="%s">%s</a></p>',
 			esc_url( admin_url( 'admin.php?page=' . self::PAGE . '&step=connect' ) ),
-			esc_html__( 'Start another migration', 'store-migrator-for-woocommerce' )
+			esc_html__( 'Start another migration', 'yuupee-store-migrator-shopify-woocommerce' )
 		);
 
 		if ( in_array( $status, array( 'running', 'done', 'failed', 'paused' ), true ) && ( $done > 0 || $variations > 0 || $images > 0 ) ) {
-			echo '<hr /><h3>' . esc_html__( 'Roll back this migration', 'store-migrator-for-woocommerce' ) . '</h3>';
-			echo '<p>' . esc_html__( 'Permanently deletes every product, variation and image this run created, and cancels any pending batches.', 'store-migrator-for-woocommerce' ) . '</p>';
+			echo '<hr /><h3>' . esc_html__( 'Roll back this migration', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h3>';
+			echo '<p>' . esc_html__( 'Permanently deletes every product, variation and image this run created, and cancels any pending batches.', 'yuupee-store-migrator-shopify-woocommerce' ) . '</p>';
 			printf(
 				'<form method="post" action="%s" onsubmit="return confirm(%s);">',
 				esc_url( admin_url( 'admin-post.php' ) ),
-				esc_attr( wp_json_encode( __( 'Delete everything this migration created? This cannot be undone.', 'store-migrator-for-woocommerce' ) ) )
+				esc_attr( wp_json_encode( __( 'Delete everything this migration created? This cannot be undone.', 'yuupee-store-migrator-shopify-woocommerce' ) ) )
 			);
 			wp_nonce_field( 'stwm_rollback' );
 			echo '<input type="hidden" name="action" value="stwm_rollback" />';
 			echo '<input type="hidden" name="stwm_run_id" value="' . esc_attr( $run_id ) . '" />';
 			printf(
 				'<p><label><input type="checkbox" name="stwm_confirm" value="1" required /> %s</label></p>',
-				esc_html__( 'Yes, I understand this deletes the imported data.', 'store-migrator-for-woocommerce' )
+				esc_html__( 'Yes, I understand this deletes the imported data.', 'yuupee-store-migrator-shopify-woocommerce' )
 			);
 			printf(
 				'<p><label><input type="checkbox" name="stwm_delete_images" value="1" checked /> %s</label></p>',
-				esc_html__( 'Also delete imported images from the media library', 'store-migrator-for-woocommerce' )
+				esc_html__( 'Also delete imported images from the media library', 'yuupee-store-migrator-shopify-woocommerce' )
 			);
-			submit_button( __( 'Roll back', 'store-migrator-for-woocommerce' ), 'delete' );
+			submit_button( __( 'Roll back', 'yuupee-store-migrator-shopify-woocommerce' ), 'delete' );
 			echo '</form>';
 		}
 	}
@@ -518,13 +518,13 @@ class STWM_Admin {
 		$n_error = STWM_Log::count( $run_id, 'error' );
 		$n_warn  = STWM_Log::count( $run_id, 'warning' );
 
-		echo '<hr /><h3>' . esc_html__( 'Log', 'store-migrator-for-woocommerce' ) . '</h3>';
+		echo '<hr /><h3>' . esc_html__( 'Log', 'yuupee-store-migrator-shopify-woocommerce' ) . '</h3>';
 		printf(
 			'<p>%s ',
 			esc_html(
 				sprintf(
 				/* translators: 1: errors, 2: warnings, 3: total */
-					__( '%1$s errors, %2$s warnings, %3$s entries total.', 'store-migrator-for-woocommerce' ),
+					__( '%1$s errors, %2$s warnings, %3$s entries total.', 'yuupee-store-migrator-shopify-woocommerce' ),
 					number_format_i18n( $n_error ),
 					number_format_i18n( $n_warn ),
 					number_format_i18n( $total )
@@ -534,7 +534,7 @@ class STWM_Admin {
 		printf(
 			'<a class="button" href="%s">%s</a></p>',
 			esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=stwm_log_csv&run=' . rawurlencode( $run_id ) ), 'stwm_log_csv' ) ),
-			esc_html__( 'Download full log (CSV)', 'store-migrator-for-woocommerce' )
+			esc_html__( 'Download full log (CSV)', 'yuupee-store-migrator-shopify-woocommerce' )
 		);
 
 		$log_rows = STWM_Log::rows( $run_id, 100 );
@@ -542,10 +542,10 @@ class STWM_Admin {
 			return;
 		}
 		echo '<table class="widefat striped"><thead><tr>';
-		echo '<th>' . esc_html__( 'Time (UTC)', 'store-migrator-for-woocommerce' ) . '</th>';
-		echo '<th>' . esc_html__( 'Level', 'store-migrator-for-woocommerce' ) . '</th>';
-		echo '<th>' . esc_html__( 'Item', 'store-migrator-for-woocommerce' ) . '</th>';
-		echo '<th>' . esc_html__( 'Message', 'store-migrator-for-woocommerce' ) . '</th>';
+		echo '<th>' . esc_html__( 'Time (UTC)', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+		echo '<th>' . esc_html__( 'Level', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+		echo '<th>' . esc_html__( 'Item', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
+		echo '<th>' . esc_html__( 'Message', 'yuupee-store-migrator-shopify-woocommerce' ) . '</th>';
 		echo '</tr></thead><tbody>';
 		foreach ( $log_rows as $r ) {
 			$item = trim( $r->entity_type . ' ' . $r->source_id );
@@ -564,7 +564,7 @@ class STWM_Admin {
 				esc_html(
 					sprintf(
 					/* translators: 1: shown, 2: total */
-						__( 'Showing the latest %1$s of %2$s entries — the CSV has everything.', 'store-migrator-for-woocommerce' ),
+						__( 'Showing the latest %1$s of %2$s entries — the CSV has everything.', 'yuupee-store-migrator-shopify-woocommerce' ),
 						number_format_i18n( count( $log_rows ) ),
 						number_format_i18n( $total )
 					)
@@ -578,13 +578,13 @@ class STWM_Admin {
 	 */
 	public static function handle_log_csv() {
 		if ( ! current_user_can( self::CAP ) ) {
-			wp_die( esc_html__( 'Permission denied.', 'store-migrator-for-woocommerce' ) );
+			wp_die( esc_html__( 'Permission denied.', 'yuupee-store-migrator-shopify-woocommerce' ) );
 		}
 		check_admin_referer( 'stwm_log_csv' );
 
 		$run_id = isset( $_GET['run'] ) ? preg_replace( '/[^a-f0-9]/', '', sanitize_text_field( wp_unslash( $_GET['run'] ) ) ) : '';
 		if ( '' === $run_id ) {
-			wp_die( esc_html__( 'No run specified.', 'store-migrator-for-woocommerce' ) );
+			wp_die( esc_html__( 'No run specified.', 'yuupee-store-migrator-shopify-woocommerce' ) );
 		}
 
 		$rows = STWM_Log::all_for_csv( $run_id );
@@ -606,7 +606,7 @@ class STWM_Admin {
 
 	public static function handle_post() {
 		if ( ! current_user_can( self::CAP ) ) {
-			wp_die( esc_html__( 'Permission denied.', 'store-migrator-for-woocommerce' ) );
+			wp_die( esc_html__( 'Permission denied.', 'yuupee-store-migrator-shopify-woocommerce' ) );
 		}
 
 		$step  = isset( $_POST['stwm_step'] ) ? sanitize_key( wp_unslash( $_POST['stwm_step'] ) ) : '';
@@ -680,15 +680,15 @@ class STWM_Admin {
 		check_admin_referer( 'stwm_wizard_connect' );
 
 		if ( empty( $_FILES['stwm_csv'] ) || ! isset( $_FILES['stwm_csv']['tmp_name'] ) ) {
-			self::set_notice( __( 'No file received. Please choose a CSV file.', 'store-migrator-for-woocommerce' ), 'error' );
+			self::set_notice( __( 'No file received. Please choose a CSV file.', 'yuupee-store-migrator-shopify-woocommerce' ), 'error' );
 			return false;
 		}
 
 		$error = isset( $_FILES['stwm_csv']['error'] ) ? (int) $_FILES['stwm_csv']['error'] : UPLOAD_ERR_NO_FILE;
 		if ( UPLOAD_ERR_OK !== $error ) {
 			$msg = ( UPLOAD_ERR_INI_SIZE === $error || UPLOAD_ERR_FORM_SIZE === $error )
-				? __( 'The file is larger than this server allows. Export a smaller range from Shopify, or raise upload_max_filesize.', 'store-migrator-for-woocommerce' )
-				: __( 'The upload did not complete. Please try again.', 'store-migrator-for-woocommerce' );
+				? __( 'The file is larger than this server allows. Export a smaller range from Shopify, or raise upload_max_filesize.', 'yuupee-store-migrator-shopify-woocommerce' )
+				: __( 'The upload did not complete. Please try again.', 'yuupee-store-migrator-shopify-woocommerce' );
 			self::set_notice( $msg, 'error' );
 			return false;
 		}
@@ -696,7 +696,7 @@ class STWM_Admin {
 		$orig_name = isset( $_FILES['stwm_csv']['name'] ) ? sanitize_file_name( wp_unslash( $_FILES['stwm_csv']['name'] ) ) : 'products.csv';
 		$ext       = strtolower( pathinfo( $orig_name, PATHINFO_EXTENSION ) );
 		if ( ! in_array( $ext, array( 'csv', 'txt' ), true ) ) {
-			self::set_notice( __( 'That does not look like a .csv file.', 'store-migrator-for-woocommerce' ), 'error' );
+			self::set_notice( __( 'That does not look like a .csv file.', 'yuupee-store-migrator-shopify-woocommerce' ), 'error' );
 			return false;
 		}
 
@@ -745,11 +745,11 @@ class STWM_Admin {
 
 		if ( ! is_array( $uploaded ) || isset( $uploaded['error'] ) || empty( $uploaded['file'] ) ) {
 			STWM_Run::update( $run_id, array( 'status' => 'failed' ) );
-			$reason = is_array( $uploaded ) && isset( $uploaded['error'] ) ? $uploaded['error'] : __( 'unknown error', 'store-migrator-for-woocommerce' );
+			$reason = is_array( $uploaded ) && isset( $uploaded['error'] ) ? $uploaded['error'] : __( 'unknown error', 'yuupee-store-migrator-shopify-woocommerce' );
 			self::set_notice(
 				sprintf(
 					/* translators: %s: reason the upload failed */
-					__( 'Could not save the uploaded file: %s', 'store-migrator-for-woocommerce' ),
+					__( 'Could not save the uploaded file: %s', 'yuupee-store-migrator-shopify-woocommerce' ),
 					$reason
 				),
 				'error'
@@ -767,7 +767,7 @@ class STWM_Admin {
 		if ( false === stripos( $line, 'Handle' ) || false === stripos( $line, 'Title' ) ) {
 			wp_delete_file( $csv_path );
 			STWM_Run::update( $run_id, array( 'status' => 'failed' ) );
-			self::set_notice( __( 'This CSV has no "Handle" / "Title" columns, so it is not a Shopify product export.', 'store-migrator-for-woocommerce' ), 'error' );
+			self::set_notice( __( 'This CSV has no "Handle" / "Title" columns, so it is not a Shopify product export.', 'yuupee-store-migrator-shopify-woocommerce' ), 'error' );
 			return false;
 		}
 
@@ -783,13 +783,13 @@ class STWM_Admin {
 
 	public static function handle_rollback() {
 		if ( ! current_user_can( self::CAP ) ) {
-			wp_die( esc_html__( 'Permission denied.', 'store-migrator-for-woocommerce' ) );
+			wp_die( esc_html__( 'Permission denied.', 'yuupee-store-migrator-shopify-woocommerce' ) );
 		}
 		check_admin_referer( 'stwm_rollback' );
 
 		$run_id = isset( $_POST['stwm_run_id'] ) ? preg_replace( '/[^a-f0-9]/', '', sanitize_text_field( wp_unslash( $_POST['stwm_run_id'] ) ) ) : '';
 		if ( '' === $run_id || empty( $_POST['stwm_confirm'] ) ) {
-			self::set_notice( __( 'Rollback was not confirmed.', 'store-migrator-for-woocommerce' ), 'error' );
+			self::set_notice( __( 'Rollback was not confirmed.', 'yuupee-store-migrator-shopify-woocommerce' ), 'error' );
 			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE . '&step=report' ) );
 			exit;
 		}
@@ -828,7 +828,7 @@ class STWM_Admin {
 		self::set_notice(
 			sprintf(
 				/* translators: 1: products deleted, 2: images deleted */
-				__( 'Rolled back: %1$s products and %2$s images deleted.', 'store-migrator-for-woocommerce' ),
+				__( 'Rolled back: %1$s products and %2$s images deleted.', 'yuupee-store-migrator-shopify-woocommerce' ),
 				number_format_i18n( $deleted_p ),
 				number_format_i18n( $deleted_i )
 			),

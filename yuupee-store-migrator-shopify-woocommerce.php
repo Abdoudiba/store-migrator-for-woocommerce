@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       Store Migrator for WooCommerce
- * Plugin URI:        https://github.com/Abdoudiba/store-migrator-for-woocommerce
+ * Plugin Name:       Yuupee Store Migrator for Shopify and WooCommerce
+ * Plugin URI:        https://github.com/Abdoudiba/yuupee-store-migrator-shopify-woocommerce
  * Description:        Migrate a Shopify store into WooCommerce — products, variants and images from a CSV export (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -11,14 +11,14 @@
  * Author:            Abid
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       store-migrator-for-woocommerce
+ * Text Domain:       yuupee-store-migrator-shopify-woocommerce
  *
  * @package Store_Migrator_For_WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'STWM_VERSION', '1.0.0' );
+define( 'STWM_VERSION', '1.0.1' );
 define( 'STWM_PLUGIN_FILE', __FILE__ );
 define( 'STWM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'STWM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -41,7 +41,7 @@ register_deactivation_hook( __FILE__, array( 'STWM_Install', 'deactivate' ) );
  */
 function stwm_woocommerce_missing_notice() {
 	echo '<div class="notice notice-error"><p>' .
-		esc_html__( 'Store Migrator for WooCommerce requires WooCommerce to be installed and active.', 'store-migrator-for-woocommerce' ) .
+		esc_html__( 'Yuupee Store Migrator for Shopify and WooCommerce requires WooCommerce to be installed and active.', 'yuupee-store-migrator-shopify-woocommerce' ) .
 		'</p></div>';
 }
 

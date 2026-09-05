@@ -2,8 +2,8 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Store Migrator for WooCommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/store-migrator-for-woocommerce\n"
+"Project-Id-Version: Yuupee Store Migrator for Shopify and WooCommerce 1.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/yuupee-store-migrator-shopify-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,25 +12,25 @@ msgstr ""
 "POT-Creation-Date: 2026-08-30T22:29:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: store-migrator-for-woocommerce\n"
+"X-Domain: yuupee-store-migrator-shopify-woocommerce\n"
 
 #. Plugin Name of the plugin
-#: store-migrator-for-woocommerce.php
-msgid "Store Migrator for WooCommerce"
+#: yuupee-store-migrator-shopify-woocommerce.php
+msgid "Yuupee Store Migrator for Shopify and WooCommerce"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: store-migrator-for-woocommerce.php
-msgid "https://github.com/Abdoudiba/store-migrator-for-woocommerce"
+#: yuupee-store-migrator-shopify-woocommerce.php
+msgid "https://github.com/Abdoudiba/yuupee-store-migrator-shopify-woocommerce"
 msgstr ""
 
 #. Description of the plugin
-#: store-migrator-for-woocommerce.php
+#: yuupee-store-migrator-shopify-woocommerce.php
 msgid "Migrate a Shopify store into WooCommerce — products, variants and images from a CSV export (free), plus collections, customers, orders, coupons and 301 redirects (premium). Batched with Action Scheduler and resumable."
 msgstr ""
 
 #. Author of the plugin
-#: store-migrator-for-woocommerce.php
+#: yuupee-store-migrator-shopify-woocommerce.php
 msgid "Abid"
 msgstr ""
 
@@ -379,6 +379,6 @@ msgstr ""
 msgid "Rolled back: %1$s products and %2$s images deleted."
 msgstr ""
 
-#: store-migrator-for-woocommerce.php:44
-msgid "Store Migrator for WooCommerce requires WooCommerce to be installed and active."
+#: yuupee-store-migrator-shopify-woocommerce.php:44
+msgid "Yuupee Store Migrator for Shopify and WooCommerce requires WooCommerce to be installed and active."
 msgstr ""
